@@ -10,9 +10,16 @@ spring:
           uri: https://www.qq.com
           predicates:
             - Query=url,qq
+#优先级高的路由放在前面
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api(?<segment>/?.*), $\{segment}
         - id: admin_route
           uri: lb://renren-fast
           predicates:
             - Path=/api/**
           filters:
-            - RewritePath=/api(?<segment>/?.*),/renren-fast/$\{segment}
+            - RewritePath=/api(?<segment>/?.*), /renren-fast/$\{segment}
