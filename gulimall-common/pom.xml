@@ -16,9 +16,9 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.3.1</version>
+            <version>3.4.1</version>
         </dependency>
-
+        <!-- lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -30,69 +30,67 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.13</version>
         </dependency>
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-
         <!-- mysql-connector-java -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.16</version>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
-
-        <!--  服务注册/发现-->
+        <!--  服务配置中心/管理-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
-        <!--       服务配置中心/管理-->
+        <!--  服务注册/发现-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <!--            <exclusions>-->
-            <!--                <exclusion>-->
-            <!--                    <groupId>org.springframework.cloud</groupId>-->
-            <!--                    <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>-->
-            <!--                </exclusion>-->
-            <!--            </exclusions>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework.cloud</groupId>-->
+<!--                    <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
         </dependency>
 
         <!-- spring-cloud-loadbalancer -->
         <!-- Spring Cloud 在 Hoxton.M2 RELEASED版本之后 Netflix Ribbon处于维护模式，
              改用Spring Cloud LoadBalancer。并需排除spring-cloud-starter-netflix-ribbon -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.cloud</groupId>-->
-        <!--            <artifactId>spring-cloud-loadbalancer</artifactId>-->
-        <!--            <version>3.0.0</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-loadbalancer</artifactId>-->
+<!--            <version>3.0.0</version>-->
+<!--        </dependency>-->
 
 
     </dependencies>
 
+
     <dependencyManagement>
         <dependencies>
-            <!--  注意：版本 2.1.x.RELEASE 对应的是 Spring Boot 2.1.x 版本。
+            <!--  alibaba spring cloud 依赖版本管理
+              注意：版本 2.2.x.RELEASE 对应的是 Spring Boot 2.2.x 版本。
+                   版本 2.1.x.RELEASE 对应的是 Spring Boot 2.1.x 版本。
                    版本 2.0.x.RELEASE 对应的是 Spring Boot 2.0.x 版本，
                    版本不一致会导致nacos注册中心不生效-->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>2.1.3.RELEASE</version>
+                <version>2.2.1.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 

@@ -10,13 +10,22 @@ spring:
           uri: https://www.qq.com
           predicates:
             - Query=url,qq
-#优先级高的路由放在前面
+        #优先级高的路由放在前面
+        #商品服务路由
         - id: product_route
           uri: lb://gulimall-product
           predicates:
             - Path=/api/product/**
           filters:
             - RewritePath=/api(?<segment>/?.*), $\{segment}
+        #第三方服务路由
+        - id: third_party_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api(?<segment>/?.*), $\{segment}
+        #后台管理路由
         - id: admin_route
           uri: lb://renren-fast
           predicates:
