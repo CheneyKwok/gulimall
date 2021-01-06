@@ -8,6 +8,7 @@
 
 package com.guo.common.utils;
 
+import com.guo.common.excepiton.BizCodeEnum;
 import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
@@ -38,6 +39,12 @@ public class R extends HashMap<String, Object> {
         R r = new R();
         r.put("code", code);
         r.put("msg", msg);
+        return r;
+    }
+    public static R error(BizCodeEnum bizCodeEnum) {
+        R r = new R();
+        r.put("code", bizCodeEnum.getCode());
+        r.put("msg", bizCodeEnum.getMsg());
         return r;
     }
 
