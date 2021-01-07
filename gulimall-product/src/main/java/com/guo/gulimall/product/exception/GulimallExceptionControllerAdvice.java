@@ -31,7 +31,7 @@ public class GulimallExceptionControllerAdvice {
 
     @ExceptionHandler(value = Throwable.class)
     public R handleException(Throwable throwable){
-
+        log.error(throwable.getMessage());
         return R.error(BizCodeEnum.UN_KNOW_EXCEPTION);
     }
 }
