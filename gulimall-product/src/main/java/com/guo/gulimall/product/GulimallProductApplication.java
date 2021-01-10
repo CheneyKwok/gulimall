@@ -3,6 +3,7 @@ package com.guo.gulimall.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * JSR303: Java规范提案第303号
@@ -21,6 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *  1）、编写异常处理类，使用@ControllerAdvice
  *  2）、使用@ExceptionHandler标注方法可以处理的异常
  */
+@EnableFeignClients //自动扫描此父包下的带有@FeignClient注解的类，或者手动指定路径
 @MapperScan("com.guo.gulimall.product.dao")
 @SpringBootApplication
 public class GulimallProductApplication {

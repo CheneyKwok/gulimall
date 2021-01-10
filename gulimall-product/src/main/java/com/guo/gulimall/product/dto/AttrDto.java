@@ -48,4 +48,6 @@ public class AttrDto {
     private Integer showDesc;
 
     private Long attrGroupId;
+
+    private Integer valueType;
 }

@@ -3,7 +3,6 @@ package com.guo.gulimall.product.vo;
 import com.guo.gulimall.product.dto.AttrDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -18,4 +17,6 @@ public class AttrVo extends AttrDto{
     private String groupName;
 
     private Long[] catelogPath;
+
+    private Integer valueType;
 }
