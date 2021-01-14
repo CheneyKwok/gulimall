@@ -5,6 +5,7 @@ import com.guo.common.utils.PageUtils;
 import com.guo.gulimall.product.dto.AttrGroupRelationDto;
 import com.guo.gulimall.product.entity.AttrEntity;
 import com.guo.gulimall.product.dto.AttrDto;
+import com.guo.gulimall.product.entity.ProductAttrValueEntity;
 import com.guo.gulimall.product.vo.AttrVo;
 
 import java.util.List;
@@ -40,5 +41,6 @@ public interface AttrService extends IService<AttrEntity> {
      * 获取当前分组没有关联的所有属性
      */
     PageUtils getNoAttrRelation(Map<String, Object> params, Long attrGroupId);
+
 }
 

@@ -6,10 +6,8 @@ import com.guo.gulimall.product.dao.AttrAttrgroupRelationDao;
 import com.guo.gulimall.product.dao.AttrGroupDao;
 import com.guo.gulimall.product.dao.CategoryDao;
 import com.guo.gulimall.product.dto.AttrGroupRelationDto;
-import com.guo.gulimall.product.entity.AttrAttrgroupRelationEntity;
+import com.guo.gulimall.product.entity.*;
 import com.guo.gulimall.product.dto.AttrDto;
-import com.guo.gulimall.product.entity.AttrGroupEntity;
-import com.guo.gulimall.product.entity.CategoryEntity;
 import com.guo.gulimall.product.service.CategoryService;
 import com.guo.gulimall.product.vo.AttrVo;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +26,6 @@ import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.Query;
 
 import com.guo.gulimall.product.dao.AttrDao;
-import com.guo.gulimall.product.entity.AttrEntity;
 import com.guo.gulimall.product.service.AttrService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -209,5 +206,6 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), wrapper);
         return new PageUtils(page);
     }
+
 
 }
