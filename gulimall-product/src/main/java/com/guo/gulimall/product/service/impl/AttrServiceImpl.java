@@ -207,5 +207,13 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         return new PageUtils(page);
     }
 
+    @Override
+    public List<Long> selectSearchAttrs(List<Long> attrIds) {
+        List<Object> list = listObjs(new QueryWrapper<AttrEntity>().lambda()
+                .in(AttrEntity::getAttrId, attrIds));
+
+        return list.stream().map(id -> (Long) id).collect(Collectors.toList());
+    }
+
 
 }

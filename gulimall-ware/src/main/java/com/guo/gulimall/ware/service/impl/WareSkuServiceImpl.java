@@ -1,12 +1,16 @@
 package com.guo.gulimall.ware.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.guo.common.utils.R;
+import com.guo.common.to.SkuHasStockTo;
 import com.guo.gulimall.ware.feign.ProductFeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -77,5 +81,20 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             wareSkuDao.addStock(skuId,wareId,skuNum);
         }
 
+    }
+
+    @Override
+    public List<SkuHasStockTo> getSkuHasStock(List<Long> skuIds) {
+        return skuIds.stream().map(id -> {
+            SkuHasStockTo stockDto = new SkuHasStockTo();
+            LambdaQueryWrapper<WareSkuEntity> queryWrapper = new QueryWrapper<WareSkuEntity>()
+                    .lambda()
+                    .select(WareSkuEntity::getStockLocked)
+                    .eq(WareSkuEntity::getSkuId, id);
+            int count = count(queryWrapper);
+            stockDto.setSkuId(id);
+            stockDto.setHasStock(count > 0);
+            return stockDto;
+        }).collect(Collectors.toList());
     }
 }

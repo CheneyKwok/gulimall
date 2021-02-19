@@ -5,11 +5,7 @@ import java.util.Map;
 
 import com.guo.gulimall.product.dto.SpuSaveDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.guo.gulimall.product.entity.SpuInfoEntity;
 import com.guo.gulimall.product.service.SpuInfoService;
@@ -84,6 +80,12 @@ public class SpuInfoController {
     public R delete(@RequestBody Long[] ids){
 		spuInfoService.removeByIds(Arrays.asList(ids));
 
+        return R.ok();
+    }
+
+    @PostMapping("/{spuId}/up")
+    public R spuUp(@PathVariable("spuId") Long spuId) {
+        spuInfoService.up(spuId);
         return R.ok();
     }
 
