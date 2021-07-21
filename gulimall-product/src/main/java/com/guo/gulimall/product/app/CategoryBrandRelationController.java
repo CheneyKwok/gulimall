@@ -1,21 +1,19 @@
-package com.guo.gulimall.product.controller;
+package com.guo.gulimall.product.app;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.guo.common.utils.PageUtils;
+import com.guo.common.utils.R;
+import com.guo.gulimall.product.entity.BrandEntity;
+import com.guo.gulimall.product.entity.CategoryBrandRelationEntity;
+import com.guo.gulimall.product.service.CategoryBrandRelationService;
+import com.guo.gulimall.product.vo.BrandVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.guo.gulimall.product.entity.AttrAttrgroupRelationEntity;
-import com.guo.gulimall.product.entity.BrandEntity;
-import com.guo.gulimall.product.vo.BrandVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import com.guo.gulimall.product.entity.CategoryBrandRelationEntity;
-import com.guo.gulimall.product.service.CategoryBrandRelationService;
-import com.guo.common.utils.PageUtils;
-import com.guo.common.utils.R;
 
 
 

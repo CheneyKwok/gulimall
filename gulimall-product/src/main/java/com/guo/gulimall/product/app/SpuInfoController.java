@@ -1,16 +1,15 @@
-package com.guo.gulimall.product.controller;
+package com.guo.gulimall.product.app;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.guo.common.utils.PageUtils;
+import com.guo.common.utils.R;
 import com.guo.gulimall.product.dto.SpuSaveDto;
+import com.guo.gulimall.product.entity.SpuInfoEntity;
+import com.guo.gulimall.product.service.SpuInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.guo.gulimall.product.entity.SpuInfoEntity;
-import com.guo.gulimall.product.service.SpuInfoService;
-import com.guo.common.utils.PageUtils;
-import com.guo.common.utils.R;
+import java.util.Arrays;
+import java.util.Map;
 
 
 

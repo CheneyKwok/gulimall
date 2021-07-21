@@ -1,20 +1,18 @@
-package com.guo.gulimall.product.controller;
+package com.guo.gulimall.product.app;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.guo.common.utils.PageUtils;
+import com.guo.common.utils.R;
 import com.guo.gulimall.product.dto.AttrDto;
 import com.guo.gulimall.product.entity.ProductAttrValueEntity;
+import com.guo.gulimall.product.service.AttrService;
 import com.guo.gulimall.product.service.ProductAttrValueService;
 import com.guo.gulimall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.guo.gulimall.product.entity.AttrEntity;
-import com.guo.gulimall.product.service.AttrService;
-import com.guo.common.utils.PageUtils;
-import com.guo.common.utils.R;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 

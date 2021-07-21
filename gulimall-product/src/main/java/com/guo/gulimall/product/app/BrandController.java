@@ -1,27 +1,18 @@
-package com.guo.gulimall.product.controller;
+package com.guo.gulimall.product.app;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.guo.common.utils.PageUtils;
+import com.guo.common.utils.R;
 import com.guo.common.valid.AddGroup;
 import com.guo.common.valid.UpdateGroup;
 import com.guo.common.valid.UpdateStatusGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.guo.gulimall.product.entity.BrandEntity;
 import com.guo.gulimall.product.service.BrandService;
-import com.guo.common.utils.PageUtils;
-import com.guo.common.utils.R;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
