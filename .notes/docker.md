@@ -139,10 +139,49 @@ docker run --name elasticsearch \
 -v /mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins \
 -d elasticsearch:7.4.2
 ```
-
 chmod -R 777 /mydata/elasticsearch/ 保证权限
+###配置es分词器
+ik分词器：https://github.com/medcl/elasticsearch-analysis-ik
+下载与es版本相同的ik分词器，解压放置于/mydata/elasticsearch/plugins/ik/目录下
+在ik/config/ 下编辑IKAnalyzer.cfg.xml 配置远程字典
+![img.png](img.png)
+
 ## 启动kibana
 ```
  docker run --name kibana -e ELASTICSEARCH_HOSTS=http://115.29.195.125:9200 -p 5601:5601 -d kibana:7.4.2
 ```
 
+## 安装nginx
+```
+docker run -p 80:80 --name nginx \
+-v /mydata/nginx/html:/usr/share/nginx/html \
+-v /mydata/nginx/logs:/var/log/nginx \
+-v /mydata/nginx/conf:/etc/nginx \
+-d nginx:1.10
+```
+###nginx配置反向代理
+####nginx配置文件位置：/etc/nginx（/mydata/nginx） 下的nginx.conf
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+####conf.d/下的default.conf
+![img_3.png](img_3.png)
+####自定义配置
+1) 首先在nginx.conf中配置上流服务器地址
+![img_6.png](img_6.png)
+2) 其次在自定义的conf中配置代理
+![img_5.png](img_5.png)
+```shell
+
+```
+
+##安装nacos
+在/mydata/nacos/init.d/ 目录下创建custom.properties文件
+```shell
+docker run --name nacos --restart=always 
+-e MODE=standalone \
+-e JVM_XMS=128m \
+-e JVM_XMX=128m \
+-v /mydata/nacos/logs:/home/nacos/logs \
+-v /mydata/nacos/init.d/custom.properties:/home/nacos/init.d/custom.properties \
+-p 8848:8848 -d nacos/nacos-server
+```
