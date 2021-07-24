@@ -2,9 +2,9 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 127.0.0.1:8848
+        server-addr: 115.29.195.125:8848
         file-extension: yaml
-        namespace: coupon-100
+        namespace: c1bcedc5-f9a7-4315-a18f-f37222262b1b
         extension-configs:
           - data-id: datasource.yaml
             group: dev

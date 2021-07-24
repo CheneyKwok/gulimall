@@ -71,22 +71,22 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.springframework.cloud</groupId>-->
-<!--                    <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
+            <!--            <exclusions>-->
+            <!--                <exclusion>-->
+            <!--                    <groupId>org.springframework.cloud</groupId>-->
+            <!--                    <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>-->
+            <!--                </exclusion>-->
+            <!--            </exclusions>-->
         </dependency>
 
         <!-- spring-cloud-loadbalancer -->
         <!-- Spring Cloud 在 Hoxton.M2 RELEASED版本之后 Netflix Ribbon处于维护模式，
              改用Spring Cloud LoadBalancer。并需排除spring-cloud-starter-netflix-ribbon -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-loadbalancer</artifactId>-->
-<!--            <version>3.0.0</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.cloud</groupId>-->
+        <!--            <artifactId>spring-cloud-loadbalancer</artifactId>-->
+        <!--            <version>3.0.0</version>-->
+        <!--        </dependency>-->
 
 
     </dependencies>
@@ -115,6 +115,22 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+    <plugins>
+        <!--compiler插件-->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.6.0</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+                <encoding>${file.encoding}</encoding>
+            </configuration>
+        </plugin>
+    </plugins>
+    </build>
 
 
 </project>

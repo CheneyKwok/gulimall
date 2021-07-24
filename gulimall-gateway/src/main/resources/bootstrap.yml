@@ -2,8 +2,8 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 192.168.56.1:8848
-        namespace: gateway
+        server-addr: 115.29.195.125:8848
+        namespace: 46565c52-e9fa-4e03-ae70-f1b5fe275719
         file-extension: yaml
   application:
     name: gulimall-gateway

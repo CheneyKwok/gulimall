@@ -5,4 +5,4 @@ spring:
         server-addr: 115.29.195.125:8848
         file-extension: yaml
   application:
-    name: gulimall-ware
+    name: renren-fast
