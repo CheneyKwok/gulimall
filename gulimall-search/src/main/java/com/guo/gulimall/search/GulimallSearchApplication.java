@@ -11,4 +11,5 @@ public class GulimallSearchApplication {
         SpringApplication.run(GulimallSearchApplication.class, args);
     }
 
+
 }

@@ -47,3 +47,15 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api(?<segment>/?.*), /renren-fast/$\{segment}
+        # nginx反向代理
+        # 首页
+        - id: gulimall_host_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=gulimall.com
+        # 搜索
+        - id: gulimall_search_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
+

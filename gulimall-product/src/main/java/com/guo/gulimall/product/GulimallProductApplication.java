@@ -21,6 +21,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *  统一的异常处理 @ControllerAdvice
  *  1）、编写异常处理类，使用@ControllerAdvice
  *  2）、使用@ExceptionHandler标注方法可以处理的异常
+ *  整合redisson作为分布式锁
  */
 @EnableFeignClients //自动扫描此父包下的带有@FeignClient注解的类，或者手动指定路径
 @MapperScan("com.guo.gulimall.product.dao")

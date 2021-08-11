@@ -5,4 +5,5 @@ spring:
         server-addr: 192.168.56.10:8848
         file-extension: yaml
   application:
-    name: gulimall-ware
+    name: gulimall-search
+

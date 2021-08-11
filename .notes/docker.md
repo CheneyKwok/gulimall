@@ -170,9 +170,8 @@ docker run -p 80:80 --name nginx \
 ![img_6.png](img_6.png)
 2) 其次在自定义的conf中配置代理
 ![img_5.png](img_5.png)
-```shell
-
-```
+3) nginx代理给网关时，会丢失请求的信息
+   ![img_7.png](img_7.png)
 
 ##安装nacos
 在/mydata/nacos/init.d/ 目录下创建custom.properties文件

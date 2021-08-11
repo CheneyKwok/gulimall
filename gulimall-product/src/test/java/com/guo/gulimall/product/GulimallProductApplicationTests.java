@@ -4,10 +4,10 @@ package com.guo.gulimall.product;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.guo.gulimall.product.entity.BrandEntity;
 import com.guo.gulimall.product.service.BrandService;
-
 import com.guo.gulimall.product.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -23,10 +23,18 @@ class GulimallProductApplicationTests {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    RedissonClient redissonClient;
+
     @Test
     public void test() {
         Long[] catelogPath = categoryService.findCatelogPath(171L);
         log.info("完整路径：{}", Arrays.asList(catelogPath));
+    }
+
+    @Test
+    public void redissonClientTest() {
+        System.out.println(redissonClient);
     }
 
 
