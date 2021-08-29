@@ -133,7 +133,7 @@ docker run --name elasticsearch \
 -p 9200:9200 \ http请求端口
 -p 9300:9300 \ es在分布式集群状态下节点之间的通信端口
 -e "discovery.type=single-node" \ 单节点模式
--e ES_JAVA_OPTS="-Xms64m -Xms128m" \ 指定es初始化内存64m，最大128m
+-e ES_JAVA_OPTS="-Xms64m -Xmx128m" \ 指定es初始化内存64m，最大128m
 -v /mydata/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
 -v /mydata/elasticsearch/data:/usr/share/elasticsearch/data \
 -v /mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins \
