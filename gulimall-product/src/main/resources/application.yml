@@ -30,7 +30,7 @@ logging:
     com.guo.gulimall: debug
 #alibaba:
 #  cloud:
-#    access-key: LTAI4G8mcNmnKGh6Rp31C4zs
-#    secret-key: VW1x6yo4EUwLs6FVoWhy4eC6jFwbWL
+#    access-key: 
+#    secret-key: 
 #    oss:
 #      endpoint: oss-cn-hangzhou.aliyuncs.com
