@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class BrandVO {
 
-    private Integer brandId;
+    private Long brandId;
 
     private String brandName;
 
