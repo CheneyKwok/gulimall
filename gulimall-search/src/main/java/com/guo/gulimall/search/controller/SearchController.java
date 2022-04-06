@@ -3,6 +3,7 @@ package com.guo.gulimall.search.controller;
 import com.guo.gulimall.search.service.MallSearchService;
 import com.guo.gulimall.search.vo.SearchParam;
 import com.guo.gulimall.search.vo.SearchResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SearchController {
 
+    @Autowired
     MallSearchService mallSearchService;
 
     /**

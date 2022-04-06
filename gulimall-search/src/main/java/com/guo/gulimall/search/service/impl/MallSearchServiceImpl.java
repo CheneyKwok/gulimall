@@ -1,8 +1,10 @@
 package com.guo.gulimall.search.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.guo.common.to.es.SKuEsModule;
+import com.guo.common.utils.R;
 import com.guo.gulimall.search.config.ElasticsearchConfig;
 import com.guo.gulimall.search.constant.EsConstant;
 import com.guo.gulimall.search.service.MallSearchService;
@@ -44,6 +46,8 @@ public class MallSearchServiceImpl implements MallSearchService {
     @Autowired
     private RestHighLevelClient client;
 
+    private Pr
+
     @Override
     public SearchResult search(SearchParam searchParam) {
         // 动态构建出查询需要的DSL语句
@@ -79,7 +83,9 @@ public class MallSearchServiceImpl implements MallSearchService {
         if (CollectionUtils.isNotEmpty(searchParam.getBrandId())) {
             boolQuery.filter(QueryBuilders.termsQuery("brandId", searchParam.getBrandId()));
         }
-        boolQuery.filter(QueryBuilders.termQuery("hasStock", searchParam.getHasStock() == 1));
+        if (searchParam.getHasStock() == 1) {
+            boolQuery.filter(QueryBuilders.termQuery("hasStock", searchParam.getHasStock() == 1));
+        }
         if (StringUtils.isNotEmpty(searchParam.getSkuPrice())) {
             // 1_500/_500/500_
             RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("skuPrice");
@@ -251,6 +257,38 @@ public class MallSearchServiceImpl implements MallSearchService {
         result.setTotal(total);
         int totalPages = (int) (total % EsConstant.PRODUCT_PAGE_SIZE == 0 ? total / EsConstant.PRODUCT_PAGE_SIZE : (total / EsConstant.PRODUCT_PAGE_SIZE + 1));
         result.setTotalPages(totalPages);
+        List<Integer> pageNavs = new ArrayList<>();
+        for (int i = 0; i < totalPages; i++) {
+            pageNavs.add(i);
+        }
+        result.setPageNavs(pageNavs);
+
+        List<String> attrs = searchParam.getAttrs();
+        if (attrs != null && attrs.size() > 0) {
+            List<SearchResult.NavVo> navVos = attrs.stream().map(attr -> {
+                String[] split = attr.split("_");
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                //6.1 设置属性值
+                navVo.setNavValue(split[1]);
+                //6.2 查询并设置属性名
+                try {
+                    R r = productFeignService.info(Long.parseLong(split[0]));
+                    if (r.getCode() == 0) {
+                        AttrResponseVo attrResponseVo = JSON.parseObject(JSON.toJSONString(r.get("attr")), new TypeReference<AttrResponseVo>() {
+                        });
+                        navVo.setNavName(attrResponseVo.getAttrName());
+                    }
+                } catch (Exception e) {
+                    log.error("远程调用商品服务查询属性失败", e);
+                }
+                //6.3 设置面包屑跳转链接
+                String queryString = searchParam.get_queryString();
+                String replace = queryString.replace("&attrs=" + attr, "").replace("attrs=" + attr+"&", "").replace("attrs=" + attr, "");
+                navVo.setLink("http://search.gulimall.com/search.html" + (replace.isEmpty()?"":"?"+replace));
+                return navVo;
+            }).collect(Collectors.toList());
+            result.setNavs(navVos);
+        }
         return result;
     }
 }

@@ -28,6 +28,8 @@ public class SearchResult {
      */
     private Integer totalPages;
 
+    private List<Integer> pageNavs;
+
     /**
      * 所有涉及的品牌
      */
@@ -42,5 +44,15 @@ public class SearchResult {
      * 属性
      */
     private List<AttrVO> attrVOList;
+
+    /* 面包屑导航数据 */
+    private List<NavVo> navs;
+
+    @Data
+    public static class NavVo {
+        private String navName;
+        private String navValue;
+        private String link;
+    }
 
 }
