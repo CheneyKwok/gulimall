@@ -6,4 +6,5 @@ spring:
         namespace: gateway
         file-extension: yaml
   application:
-    name: gulimall-gateway
+    name: gulimall-gatewaya
+

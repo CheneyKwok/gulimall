@@ -3,6 +3,7 @@ package com.guo.gulimall.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
@@ -26,6 +27,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients //自动扫描此父包下的带有@FeignClient注解的类，或者手动指定路径
 @MapperScan("com.guo.gulimall.product.dao")
 @SpringBootApplication
+@EnableDiscoveryClient
 public class GulimallProductApplication {
 
 	public static void main(String[] args) {
