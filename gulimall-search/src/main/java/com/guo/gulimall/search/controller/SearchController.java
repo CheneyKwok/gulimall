@@ -16,12 +16,11 @@ public class SearchController {
 
     /**
      * 根据页面提交的参数去es中查询
-     * @param searchParam
-     * @return
      */
     @GetMapping("/list.html")
     public String listPage(SearchParam searchParam, Model model) {
         SearchResult result = mallSearchService.search(searchParam);
+        model.addAttribute("result", result);
         return "list";
     }
 }
