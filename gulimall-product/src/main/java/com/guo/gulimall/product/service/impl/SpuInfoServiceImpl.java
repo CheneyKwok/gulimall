@@ -247,6 +247,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         List<SKuEsModule> upProducts = skuList.stream().map(sku -> {
             SKuEsModule sKuEsModule = new SKuEsModule();
             BeanUtils.copyProperties(sku, sKuEsModule);
+            sKuEsModule.setSkuPrice(sku.getPrice());
+            sKuEsModule.setSkuImg(sku.getSkuDefaultImg());
 
             sKuEsModule.setHasStock(finalStockMap == null || finalStockMap.get(sku.getSkuId()));
 

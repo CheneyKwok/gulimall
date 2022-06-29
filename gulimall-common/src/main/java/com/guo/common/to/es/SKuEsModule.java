@@ -14,7 +14,7 @@ public class SKuEsModule {
 
     private String skuTitle;
 
-    private BigDecimal skuPrices;
+    private BigDecimal skuPrice;
 
     private String skuImg;
 

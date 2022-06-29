@@ -48,7 +48,7 @@ PUT product_
         "type": "keyword"
       },
       "skuPrice": {
-        "type": "keyword"
+        "type": "double"
       },
       "skuTitle": {
         "type": "text",
