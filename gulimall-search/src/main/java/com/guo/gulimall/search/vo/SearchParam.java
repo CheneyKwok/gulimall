@@ -25,7 +25,7 @@ public class SearchParam {
     /**
      * 三级分类Id
      */
-    private Long cateLogThirdId;
+    private Long catalog3Id;
 
     /**
      * 排序条件
@@ -45,7 +45,7 @@ public class SearchParam {
     /**
      * 是否只显示有货
      */
-    private Integer hasStock = 1;
+    private Integer hasStock;
 
     /**
      * 价格区间
@@ -55,7 +55,7 @@ public class SearchParam {
     /**
      * 品牌ID(可多选)
      */
-    private List<Long> brandId;
+    private List<Long> brandIds;
 
     /**
      * 属性

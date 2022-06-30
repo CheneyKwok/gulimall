@@ -28,6 +28,9 @@ public class SearchResult {
      */
     private Integer totalPages;
 
+    /**
+     * 导航页码
+     */
     private List<Integer> pageNavs;
 
     /**

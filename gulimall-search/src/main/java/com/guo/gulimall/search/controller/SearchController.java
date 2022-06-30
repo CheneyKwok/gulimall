@@ -23,4 +23,5 @@ public class SearchController {
         model.addAttribute("result", result);
         return "list";
     }
+
 }
