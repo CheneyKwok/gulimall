@@ -2,9 +2,11 @@ package com.guo.gulimall.product;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.guo.gulimall.product.dao.AttrGroupDao;
 import com.guo.gulimall.product.entity.BrandEntity;
 import com.guo.gulimall.product.service.BrandService;
 import com.guo.gulimall.product.service.CategoryService;
+import com.guo.gulimall.product.vo.SpuItemAttrGroupVO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RedissonClient;
@@ -22,9 +24,18 @@ class GulimallProductApplicationTests {
     BrandService brandService;
     @Autowired
     CategoryService categoryService;
-
     @Autowired
     RedissonClient redissonClient;
+
+    @Autowired
+    AttrGroupDao attrGroupDao;
+
+
+    @Test
+    public void attrGroupDaoTest() {
+        List<SpuItemAttrGroupVO> list = attrGroupDao.getAttrGroupWithAttrBySpuId(1L, 225L);
+        System.out.println(list);
+    }
 
     @Test
     public void test() {
