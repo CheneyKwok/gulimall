@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,10 +90,11 @@ public class MallSearchServiceImpl implements MallSearchService {
         if (StringUtils.isNotEmpty(param.getSkuPrice())) {
             RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("skuPrice");
             String[] arr = param.getSkuPrice().split("_");
-            if (arr.length == 2) {
+            List<String> collect = Arrays.stream(arr).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+            if (collect.size() == 2) {
                 rangeQuery.gte(arr[0]).lte(arr[1]);
             } else if (param.getSkuPrice().startsWith("_")) {
-                rangeQuery.lte(arr[0]);
+                rangeQuery.lte(arr[1]);
             } else if (param.getSkuPrice().endsWith("_")) {
                 rangeQuery.gte(arr[0]);
             }
