@@ -17,7 +17,7 @@ public class SkuItemVO {
 
     private SpuInfoDescEntity desc;
 
-    private List<ItemSaleAttrsVO> saleAttrs;
+    private List<SkuItemSaleAttrVO> saleAttrs;
 
     private List<SpuItemAttrGroupVO> groupAttrs;
 

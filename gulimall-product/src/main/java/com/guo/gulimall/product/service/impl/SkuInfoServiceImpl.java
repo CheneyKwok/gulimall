@@ -2,9 +2,8 @@ package com.guo.gulimall.product.service.impl;
 
 import com.guo.gulimall.product.entity.SkuImagesEntity;
 import com.guo.gulimall.product.entity.SpuInfoDescEntity;
-import com.guo.gulimall.product.service.AttrGroupService;
-import com.guo.gulimall.product.service.SkuImagesService;
-import com.guo.gulimall.product.service.SpuInfoDescService;
+import com.guo.gulimall.product.service.*;
+import com.guo.gulimall.product.vo.SkuItemSaleAttrVO;
 import com.guo.gulimall.product.vo.SkuItemVO;
 import com.guo.gulimall.product.vo.SpuItemAttrGroupVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import com.guo.common.utils.Query;
 
 import com.guo.gulimall.product.dao.SkuInfoDao;
 import com.guo.gulimall.product.entity.SkuInfoEntity;
-import com.guo.gulimall.product.service.SkuInfoService;
 import org.springframework.util.StringUtils;
 
 
@@ -36,6 +34,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     private AttrGroupService attrGroupService;
+
+    @Autowired
+    SkuSaleAttrValueService skuSaleAttrValueService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -100,13 +101,15 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         List<SkuImagesEntity> imagesEntities =  skuImagesService.getImagesBySkuId(skuId);
         skuItemVO.setImages(imagesEntities);
         // 3. 获取 sku 的销售属性组合
+        List<SkuItemSaleAttrVO> skuItemSaleAttrs = skuSaleAttrValueService.getSaleAttrsBySpuId(info.getSpuId());
+        skuItemVO.setSaleAttrs(skuItemSaleAttrs);
         // 4. 获取 spu 的介绍
         SpuInfoDescEntity spuInfoDesc = spuInfoDescService.getById(info.getSpuId());
         skuItemVO.setDesc(spuInfoDesc);
         // 5. 获取 spu 的规格参数信息
         List<SpuItemAttrGroupVO> attrGroups = attrGroupService.getAttrGroupWithAttrBySpuId(info.getSpuId(), info.getCatalogId());
         skuItemVO.setGroupAttrs(attrGroups);
-        return null;
+        return skuItemVO;
     }
 
 }
