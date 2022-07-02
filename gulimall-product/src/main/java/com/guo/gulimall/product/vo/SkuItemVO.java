@@ -21,4 +21,6 @@ public class SkuItemVO {
 
     private List<SpuItemAttrGroupVO> groupAttrs;
 
+    private Boolean hasStock = true;
+
 }
