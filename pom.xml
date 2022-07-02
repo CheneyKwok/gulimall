@@ -17,10 +17,11 @@
 		<module>gulimall-product</module>
 		<module>gulimall-ware</module>
 		<module>renren-fast</module>
-		<module>renren-generator</module>
+<!--		<module>renren-generator</module>-->
 		<module>gulimall-gateway</module>
 		<module>gulimall-search</module>
 		<module>gulimall-third-party</module>
+		<module>gulimall-auth-server</module>
 	</modules>
 
 
