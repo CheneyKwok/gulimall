@@ -36,3 +36,9 @@ logging:
 #    secret-key: 
 #    oss:
 #      endpoint: oss-cn-hangzhou.aliyuncs.com
+
+gulimall:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 200
+    keep-alive-time: 10
