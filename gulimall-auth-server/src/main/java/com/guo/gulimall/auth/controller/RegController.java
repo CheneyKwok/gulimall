@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -33,8 +34,9 @@ public class RegController {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
-    @GetMapping("/sms/sendCode")
-    public R sendCode(@RequestParam("phone") String phone) {
+    @PostMapping("/sms/sendCode")
+    @ResponseBody
+    public R sendCode(String phone) {
         if (phone.isEmpty()) {
             return R.error();
         }

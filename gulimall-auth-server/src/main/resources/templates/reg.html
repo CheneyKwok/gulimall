@@ -5058,7 +5058,7 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 						</div>
 						<br/>
 						<div class="submit_btn">
-							<button type="submit" id="submit_btn">立 即 注 册</button>
+							<button type="submit">立 即 注 册</button>
 						</div>
 					</div>
 				</form>
@@ -5307,12 +5307,18 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 					timeOutChangeStyle();
 					//发送验证码
 					var phone=$("#phoneNum").val();
-					$.get("/sms/sendCode?phone="+phone,function (data){
-						alert(data)
-						if (data.code!=0){
-							alert(data.msg);
+					$.post("/sms/sendCode", {"phone": phone}, function (res){
+						console.log(res)
+						if (res.code !== 0) {
+							alert(res.msg);
 						}
 					})
+					// $.get("/sms/sendCode?phone="+phone,function (data){
+					// 	alert(data)
+					// 	if (data.code!=0){
+					// 		alert(data.msg);
+					// 	}
+					// })
 				}
 			})
 

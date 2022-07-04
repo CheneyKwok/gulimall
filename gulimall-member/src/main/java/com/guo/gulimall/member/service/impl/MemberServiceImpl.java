@@ -45,11 +45,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         //1 检查电话号是否唯一
         checkPhoneUnique(registerVo.getPhone());
         //2 检查用户名是否唯一
-        checkUserNameUnique(registerVo.getUserName());
+        checkUserNameUnique(registerVo.getUsername());
         //3 该用户信息唯一，进行插入
         MemberEntity entity = new MemberEntity();
         //3.1 保存基本信息
-        entity.setUsername(registerVo.getUserName());
+        entity.setUsername(registerVo.getUsername());
         entity.setMobile(registerVo.getPhone());
         entity.setCreateTime(new Date());
         //3.2 使用加密保存密码
