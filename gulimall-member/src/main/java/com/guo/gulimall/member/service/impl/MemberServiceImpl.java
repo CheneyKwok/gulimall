@@ -4,6 +4,7 @@ import com.guo.gulimall.member.entity.MemberLevelEntity;
 import com.guo.gulimall.member.exception.PhoneNumExistException;
 import com.guo.gulimall.member.exception.UserExistException;
 import com.guo.gulimall.member.service.MemberLevelService;
+import com.guo.gulimall.member.vo.MemberLoginVO;
 import com.guo.gulimall.member.vo.MemberRegisterVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -64,6 +65,22 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
         // 4 保存用户信息
         this.save(entity);
+    }
+
+    @Override
+    public MemberEntity login(MemberLoginVO memberLoginVO) {
+        String loginAccount = memberLoginVO.getLoginAccount();
+        //以用户名或电话号登录的进行查询
+        MemberEntity entity = lambdaQuery().eq(MemberEntity::getUsername, loginAccount).or().eq(MemberEntity::getMobile, loginAccount).one();
+        if (entity!=null){
+            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+            boolean matches = bCryptPasswordEncoder.matches(memberLoginVO.getPassword(), entity.getPassword());
+            if (matches){
+                entity.setPassword("");
+                return entity;
+            }
+        }
+        return null;
     }
 
     private void checkUserNameUnique(String userName) {
