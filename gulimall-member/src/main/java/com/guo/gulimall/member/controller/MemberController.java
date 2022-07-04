@@ -3,7 +3,11 @@ package com.guo.gulimall.member.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.guo.common.excepiton.BizCodeEnum;
+import com.guo.gulimall.member.exception.PhoneNumExistException;
+import com.guo.gulimall.member.exception.UserExistException;
 import com.guo.gulimall.member.feign.CouponFeignService;
+import com.guo.gulimall.member.vo.MemberRegisterVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +43,22 @@ public class MemberController {
         R memberCoupons = couponFeignService.memberCoupons();
         return R.ok().put("member", memberEntity).put("coupons", memberCoupons.get("coupons"));
 
+    }
+
+    /**
+     * 注册会员
+     * @return
+     */
+    @RequestMapping("/register")
+    public R register(@RequestBody MemberRegisterVO registerVo) {
+        try {
+            memberService.register(registerVo);
+        } catch (UserExistException userException) {
+            return R.error(BizCodeEnum.USER_EXIST_EXCEPTION.getCode(), BizCodeEnum.USER_EXIST_EXCEPTION.getMsg());
+        } catch (PhoneNumExistException phoneException) {
+            return R.error(BizCodeEnum.PHONE_EXIST_EXCEPTION.getCode(), BizCodeEnum.PHONE_EXIST_EXCEPTION.getMsg());
+        }
+        return R.ok();
     }
 
     /**

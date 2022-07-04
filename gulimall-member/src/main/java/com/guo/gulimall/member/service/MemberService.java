@@ -3,6 +3,7 @@ package com.guo.gulimall.member.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guo.common.utils.PageUtils;
 import com.guo.gulimall.member.entity.MemberEntity;
+import com.guo.gulimall.member.vo.MemberRegisterVO;
 
 import java.util.Map;
 
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface MemberService extends IService<MemberEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void register(MemberRegisterVO registerVo);
 }
 

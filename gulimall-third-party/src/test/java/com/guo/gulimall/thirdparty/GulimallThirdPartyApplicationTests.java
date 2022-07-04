@@ -1,6 +1,7 @@
 package com.guo.gulimall.thirdparty;
 
 import com.aliyun.oss.OSSClient;
+import com.guo.gulimall.thirdparty.service.SmsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,9 @@ class GulimallThirdPartyApplicationTests {
 
     @Autowired
     OSSClient ossClient;
+
+    @Autowired
+    SmsService smsService;
     @Test
     void contextLoads() throws FileNotFoundException {
         //        // Endpoint以杭州为例，其它Region请按实际情况填写。
@@ -32,6 +36,11 @@ class GulimallThirdPartyApplicationTests {
         // 关闭OSSClient。
         ossClient.shutdown();
         System.out.println("上传成功....");
+    }
+
+    @Test
+    public void smsServiceTest() {
+        smsService.sendSmsCode("18455618389", "1233");
     }
 
 }
