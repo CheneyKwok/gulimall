@@ -1,25 +1,21 @@
 package com.guo.gulimall.member.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import com.guo.common.excepiton.BizCodeEnum;
+import com.guo.common.utils.PageUtils;
+import com.guo.common.utils.R;
+import com.guo.gulimall.member.entity.MemberEntity;
 import com.guo.gulimall.member.exception.PhoneNumExistException;
 import com.guo.gulimall.member.exception.UserExistException;
 import com.guo.gulimall.member.feign.CouponFeignService;
+import com.guo.gulimall.member.service.MemberService;
 import com.guo.gulimall.member.vo.MemberLoginVO;
 import com.guo.gulimall.member.vo.MemberRegisterVO;
+import com.guo.gulimall.member.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.guo.gulimall.member.entity.MemberEntity;
-import com.guo.gulimall.member.service.MemberService;
-import com.guo.common.utils.PageUtils;
-import com.guo.common.utils.R;
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -41,10 +37,20 @@ public class MemberController {
     @RequestMapping("/login")
     public R login(@RequestBody MemberLoginVO memberLoginVO) {
         MemberEntity entity = memberService.login(memberLoginVO);
-        if (entity!=null){
-            return R.ok().put("memberEntity",entity);
-        }else {
+        if (entity != null) {
+            return R.ok().put("memberEntity", entity);
+        } else {
             return R.error(BizCodeEnum.LOGIN_ACCT_PASSWORD_EXCEPTION.getCode(), BizCodeEnum.LOGIN_ACCT_PASSWORD_EXCEPTION.getMsg());
+        }
+    }
+
+    @RequestMapping("/oauth2/login")
+    public R login(@RequestBody SocialUser socialUser) {
+        MemberEntity entity = memberService.login(socialUser);
+        if (entity != null) {
+            return R.ok().put("member", entity);
+        } else {
+            return R.error();
         }
     }
 
@@ -59,6 +65,7 @@ public class MemberController {
 
     /**
      * 注册会员
+     *
      * @return
      */
     @RequestMapping("/register")

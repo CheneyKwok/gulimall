@@ -5,6 +5,7 @@ import com.guo.common.utils.PageUtils;
 import com.guo.gulimall.member.entity.MemberEntity;
 import com.guo.gulimall.member.vo.MemberLoginVO;
 import com.guo.gulimall.member.vo.MemberRegisterVO;
+import com.guo.gulimall.member.vo.SocialUser;
 
 import java.util.Map;
 
@@ -23,5 +24,6 @@ public interface MemberService extends IService<MemberEntity> {
 
     MemberEntity login(MemberLoginVO memberLoginVO);
 
+    MemberEntity login(SocialUser socialUser);
 }
 

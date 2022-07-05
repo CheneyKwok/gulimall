@@ -1,35 +1,18 @@
-package com.guo.gulimall.member.entity;
+package com.guo.gulimall.auth.vo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
 
 
-/**
- * 会员
- *
- * @author guozhicheng
- * @email guozhicheng@gmail.com
- * @date 2020-12-26 17:11:26
- */
 @Data
-@TableName("ums_member")
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class MemberEntity implements Serializable {
+public class MemberRespVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * id
 	 */
-	@TableId
 	private Long id;
 	/**
 	 * 会员等级id
@@ -101,7 +84,7 @@ public class MemberEntity implements Serializable {
 	private Date createTime;
 
 	/**
-	 * 社交用户ID
+     * 社交用户ID
 	 */
 	private String socialUid;
 
