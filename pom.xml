@@ -24,6 +24,7 @@
 		<module>gulimall-auth-server</module>
 		<module>gulimall-test-sso-server</module>
 		<module>gulimall-test-sso-client</module>
+		<module>gulimall-cart</module>
 	</modules>
 
 
