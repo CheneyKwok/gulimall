@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  * JSR303: Java规范提案第303号
@@ -24,6 +25,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *  2）、使用@ExceptionHandler标注方法可以处理的异常
  *  整合redisson作为分布式锁
  */
+
+@EnableRedisHttpSession
 @EnableFeignClients //自动扫描此父包下的带有@FeignClient注解的类，或者手动指定路径
 @MapperScan("com.guo.gulimall.product.dao")
 @SpringBootApplication

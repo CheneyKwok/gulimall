@@ -63,12 +63,8 @@
             </div>
         </b>
         <ul>
-            <li>
-                <a href="/static/search/#" class="li_2">你好，请登录</a>
-            </li>
-            <li>
-                <a href="/static/search/#">免费注册</a>
-            </li>
+            <a th:if="${session.loginUser != null}">欢迎，[[${session.loginUser.nickname}]]</a>
+            <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}">你好，请登录</a>
             <span>|</span>
             <li>
                 <a href="/static/search/#">我的订单</a>

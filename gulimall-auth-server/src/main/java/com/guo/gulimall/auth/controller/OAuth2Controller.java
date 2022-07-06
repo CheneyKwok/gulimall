@@ -2,9 +2,10 @@ package com.guo.gulimall.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.guo.common.constant.AuthConstant;
 import com.guo.common.utils.R;
+import com.guo.common.vo.MemberRespVO;
 import com.guo.gulimall.auth.feign.MemberFeignService;
-import com.guo.gulimall.auth.vo.MemberRespVO;
 import com.guo.gulimall.auth.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +68,7 @@ public class OAuth2Controller {
     }
 
     @GetMapping("/oauth/gitee")
-    public String giteeOAuth(@RequestParam("code") String code) {
+    public String giteeOAuth(@RequestParam("code") String code, HttpSession session) {
         Map<String, String> params = new HashMap<>();
         params.put("client_id", "5e9c1e6ab6fd6d7b4b514ff166c46717fcb99062318d4c535fef65c4d939beca");
         params.put("client_secret", "6eb8af184489a1b07e1583fbd815744ffa276002cd970531fb568a3fdc5718ac");
@@ -92,6 +94,7 @@ public class OAuth2Controller {
                 if (r.getCode() == 0) {
                     MemberRespVO memberRespVO = r.getData("member", new TypeReference<MemberRespVO>() {
                     });
+                    session.setAttribute(AuthConstant.LOGIN_USER, memberRespVO);
                     System.out.println("memberRespVO = " + memberRespVO.toString());
                 }
             }

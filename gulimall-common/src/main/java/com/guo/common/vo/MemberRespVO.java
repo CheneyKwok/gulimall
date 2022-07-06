@@ -1,4 +1,4 @@
-package com.guo.gulimall.auth.vo;
+package com.guo.common.vo;
 
 import lombok.Data;
 

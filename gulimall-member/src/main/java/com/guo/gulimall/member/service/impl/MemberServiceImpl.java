@@ -51,6 +51,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         MemberEntity entity = new MemberEntity();
         //3.1 保存基本信息
         entity.setUsername(registerVo.getUsername());
+        entity.setNickname(registerVo.getUsername());
         entity.setMobile(registerVo.getPhone());
         entity.setCreateTime(new Date());
         //3.2 使用加密保存密码
@@ -72,10 +73,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         String loginAccount = memberLoginVO.getLoginAccount();
         //以用户名或电话号登录的进行查询
         MemberEntity entity = lambdaQuery().eq(MemberEntity::getUsername, loginAccount).or().eq(MemberEntity::getMobile, loginAccount).one();
-        if (entity!=null){
+        if (entity != null) {
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
             boolean matches = bCryptPasswordEncoder.matches(memberLoginVO.getPassword(), entity.getPassword());
-            if (matches){
+            if (matches) {
                 entity.setPassword("");
                 return entity;
             }
