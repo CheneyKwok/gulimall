@@ -1,7 +1,7 @@
 package com.guo.gulimall.product.dao;
 
-import com.guo.gulimall.product.entity.SkuSaleAttrValueEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.guo.gulimall.product.entity.SkuSaleAttrValueEntity;
 import com.guo.gulimall.product.vo.SkuItemSaleAttrVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,4 +18,7 @@ import java.util.List;
 public interface SkuSaleAttrValueDao extends BaseMapper<SkuSaleAttrValueEntity> {
 
     List<SkuItemSaleAttrVO> getSaleAttrsBySpuId(Long spuId);
+
+    List<String> getSkuSaleAttrValues(Long skuId);
+
 }

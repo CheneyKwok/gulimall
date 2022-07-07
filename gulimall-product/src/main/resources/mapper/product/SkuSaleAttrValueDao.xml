@@ -32,11 +32,19 @@
             pms_sku_info info
                 LEFT JOIN pms_sku_sale_attr_value ssav ON ssav.sku_id = info.sku_id
         WHERE
-            info.spu_id = 1
+            info.spu_id = #{spuId}
         GROUP BY
             ssav.attr_id,
             ssav.attr_name,
             ssav.attr_value
     </select>
 
+    <select id="getSkuSaleAttrValues" resultType="String">
+        SELECT
+            CONCAT( attr_name, '：', attr_value )
+        FROM
+            pms_sku_sale_attr_value
+        WHERE
+            sku_id = #{skuId};
+    </select>
 </mapper>
