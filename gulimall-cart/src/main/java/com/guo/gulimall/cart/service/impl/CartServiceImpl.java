@@ -60,7 +60,7 @@ public class CartServiceImpl implements CartService {
                 cartItem.setTitle(skuInfo.getSkuTitle());
                 cartItem.setPrice(skuInfo.getPrice());
                 cartItem.setImage(skuInfo.getSkuDefaultImg());
-                cartItem.setCount(1);
+                cartItem.setCount(num);
                 cartItem.setCheck(true);
             }, executor);
             // 远程查询 sku 组合信息
@@ -114,6 +114,34 @@ public class CartServiceImpl implements CartService {
     @Override
     public void clearCart(String cartKey) {
         redisTemplate.delete(cartKey);
+    }
+
+    @Override
+    public void checkCart(Long skuId, Integer isChecked) {
+        BoundHashOperations<String, Object, Object> ops = getCartOps();
+        String cartJson = (String) ops.get(skuId.toString());
+        if (cartJson != null) {
+            CartItem cartItem = JSON.parseObject(cartJson, CartItem.class);
+            cartItem.setCheck(isChecked == 1);
+            ops.put(skuId.toString(), JSON.toJSONString(cartItem));
+        }
+    }
+
+    @Override
+    public void changeItemCount(Long skuId, Integer num) {
+        BoundHashOperations<String, Object, Object> ops = getCartOps();
+        String cartJson = (String) ops.get(skuId.toString());
+        if (cartJson != null) {
+            CartItem cartItem = JSON.parseObject(cartJson, CartItem.class);
+            cartItem.setCount(num);
+            ops.put(skuId.toString(), JSON.toJSONString(cartItem));
+        }
+    }
+
+    @Override
+    public void deleteItem(Long skuId) {
+        BoundHashOperations<String, Object, Object> ops = getCartOps();
+        ops.delete(skuId.toString());
     }
 
     private BoundHashOperations<String, Object, Object> getCartOps() {

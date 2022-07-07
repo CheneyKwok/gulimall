@@ -55,8 +55,8 @@
 							</li>
 						</ul>
 						<ul class="header_ul_right">
-							<a th:if="${session.loginUser != null}">欢迎，[[${session.loginUser.nickname}]]</a>
-							<a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}">你好，请登录</a>
+							<li th:if="${session.loginUser != null}">欢迎，[[${session.loginUser.nickname}]]</li>
+							<li href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}" style="color: red;">你好，请登录</li>
 							<li><a href="/static/item/javascript:;" class="aa">我的订单</a> |</li>
  
 						</ul>
@@ -240,7 +240,7 @@
 						<div class="box-btns clear">
 							<div class="box-btns-one">
 								<form id="itemForm" action="http://cart.gulimall.com/addToCart" method="post">
-									<input type="text" name="num" id=""  th:value="1"/>
+									<input type="text" name="num" id="num"  th:value="1"/>
 									<input type="hidden" name="skuId"  th:value="${item.info.skuId}" />
 
 									<div class="box-btns-one1">
@@ -577,6 +577,26 @@
                 $("#cartBtn").attr("class","box-btns-two-off");
             }
         }
+
+		//购物车+ -
+		//鼠标移入变小手
+		$(".box-btns-one1").mouseover(function () {
+			$(this).css("cursor", "pointer")
+		})
+		//+
+		$("#jia").click(function () {
+			let count = $("#num").val();
+			count++
+			$("#num").val(count)
+
+		})
+		//-
+		$("#jian").click(function () {
+			let count = $("#num").val();
+			count--
+			$("#num").val(count)
+
+		})
 	</script>
 
 </html>

@@ -40,4 +40,22 @@ public class CartController {
         model.addAttribute("item", cartItem);
         return "success";
     }
+
+    @PostMapping("/checkCart")
+    public String checkCart(@RequestParam("isChecked") Integer isChecked,@RequestParam("skuId")Long skuId) {
+        cartService.checkCart(skuId, isChecked);
+        return "redirect:Http://cart.gulimall.com/cartList";
+    }
+
+    @GetMapping("/countItem")
+    public String changeItemCount(@RequestParam("skuId") Long skuId, @RequestParam("num") Integer num) {
+        cartService.changeItemCount(skuId, num);
+        return "redirect:http://cart.gulimall.com/cartList";
+    }
+
+    @GetMapping("/deleteItem")
+    public String deleteItem(@RequestParam("skuId") Long skuId) {
+        cartService.deleteItem(skuId);
+        return "redirect:http://cart.gulimall.com/cartList";
+    }
 }

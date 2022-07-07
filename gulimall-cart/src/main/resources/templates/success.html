@@ -25,8 +25,8 @@
         </ul>
 
         <ul class="hd_wrap_right">
-            <a th:if="${session.loginUser != null}">欢迎，[[${session.loginUser.nickname}]]</a>
-            <a href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}">你好，请登录</a>
+            <li th:if="${session.loginUser != null}">欢迎，[[${session.loginUser.nickname}]]</li>
+            <li href="http://auth.gulimall.com/login.html" th:if="${session.loginUser == null}" style="color: red;">你好，请登录</li>
         <li class="spacer"></li>
 
         <li>
