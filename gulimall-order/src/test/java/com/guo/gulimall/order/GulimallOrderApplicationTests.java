@@ -1,15 +1,19 @@
 package com.guo.gulimall.order;
 
+import com.guo.gulimall.order.entity.OrderEntity;
+import com.guo.gulimall.order.entity.OrderReturnReasonEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Date;
+import java.util.UUID;
 
 
 @Slf4j
@@ -25,10 +29,14 @@ class GulimallOrderApplicationTests {
 
 	/**
 	 * 1. 如何创建 Exchange、Queue、Binding
-	 *    1) 使用 AmqpAdmin 创建
+	 * 1) 使用 AmqpAdmin 创建
 	 */
 	@Test
 	void contextLoads() {
+		createExchange();
+		createQueue();
+		createBinding();
+		sendMessageTest();
 	}
 
 
@@ -59,14 +67,22 @@ class GulimallOrderApplicationTests {
 
 	@Test
 	public void sendMessageTest() {
-		rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", "hello, world!");
+
+		for (int i = 0; i < 10; i++) {
+			if (i % 2 == 0) {
+				OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
+				reasonEntity.setId(1L);
+				reasonEntity.setCreateTime(new Date());
+				reasonEntity.setName("HH" + i);
+				rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity);
+			} else {
+				OrderEntity entity = new OrderEntity();
+				entity.setOrderSn(UUID.randomUUID().toString());
+				rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", entity);
+			}
+		}
 	}
 
-
-	@RabbitListener(queues = {"hello-java-queue"})
-	public static void receiveMessageTest(Object message) {
-		System.out.println(message);
-	}
 
 
 }
