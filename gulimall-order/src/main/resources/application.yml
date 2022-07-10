@@ -3,13 +3,16 @@ spring:
     username: root
     password: root
     url: jdbc:mysql://192.168.56.10:3306/gulimall_oms
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
       discovery:
         server-addr: 192.168.56.10:8848
   application:
       name: gulimall-order
+  redis:
+    host: 192.168.56.10
+    port: 6379
   rabbitmq:
     host: 192.168.56.10
     port: 5672
@@ -21,6 +24,8 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
+  thymeleaf:
+    cache: false
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
@@ -28,3 +33,9 @@ mybatis-plus:
       id-type: auto
 server:
   port: 9000
+
+gulimall:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 200
+    keep-alive-time: 10

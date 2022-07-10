@@ -3,6 +3,7 @@ package com.guo.gulimall.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guo.common.utils.PageUtils;
 import com.guo.gulimall.order.entity.OrderEntity;
+import com.guo.gulimall.order.vo.OrderConfirmVO;
 
 import java.util.Map;
 
@@ -16,5 +17,8 @@ import java.util.Map;
 public interface OrderService extends IService<OrderEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    OrderConfirmVO confirmOrder();
+
 }
 
