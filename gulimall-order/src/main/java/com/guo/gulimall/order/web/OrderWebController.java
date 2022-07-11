@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class OrderWebController {
@@ -34,15 +33,16 @@ public class OrderWebController {
      * 前端无需传递购物车参数，服务端自己获取
      */
     @PostMapping("/submitOrder")
-    public String submitOrder(@RequestBody OrderSubmitVO orderSubmitVO) {
+    public String submitOrder(OrderSubmitVO orderSubmitVO, Model model) {
 
 
         SubmitOrderResponseVO responseVO = orderService.submitOrder(orderSubmitVO);
         // 下单成功跳转支付页
         if (responseVO.getCode() == 0) {
+            model.addAttribute("submitOrderResp", responseVO);
             return "pay";
         }
         // 下单失败回到订单页重新确认订单信息
-        return "redirect://http://order.gulimall.com/toTrade";
+        return "redirect:http://order.gulimall.com/toTrade";
     }
 }

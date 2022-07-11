@@ -11,6 +11,7 @@ import com.guo.gulimall.ware.dao.WareInfoDao;
 import com.guo.gulimall.ware.entity.WareInfoEntity;
 import com.guo.gulimall.ware.feign.MemberFeignService;
 import com.guo.gulimall.ware.service.WareInfoService;
+import com.guo.gulimall.ware.vo.FareVO;
 import com.guo.gulimall.ware.vo.MemberAddressVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,13 +46,16 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
     }
 
     @Override
-    public BigDecimal getFare(Long addressId) {
+    public FareVO getFare(Long addressId) {
 
+        FareVO fareVo = new FareVO();
         R r = memberFeignService.infoAddress(addressId);
         if (r != null) {
             MemberAddressVO address = r.getData("memberReceiveAddress", new TypeReference<MemberAddressVO>() {
             });
-            return new BigDecimal(address.getPhone().substring(0, 2));
+            fareVo.setFare(new BigDecimal(address.getPhone().substring(0, 2)));
+            fareVo.setAddress(address);
+            return fareVo;
         }
         return null;
     }

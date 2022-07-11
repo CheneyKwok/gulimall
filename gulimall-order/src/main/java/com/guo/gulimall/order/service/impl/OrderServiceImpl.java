@@ -17,7 +17,8 @@ import com.guo.gulimall.order.feign.CartFeignService;
 import com.guo.gulimall.order.feign.MemberFeignService;
 import com.guo.gulimall.order.feign.ProductFeignService;
 import com.guo.gulimall.order.feign.WareFeignService;
-import com.guo.gulimall.order.interceptor.LoginInterceptor;
+import com.guo.gulimall.order.interceptor.LoginUserInterceptor;
+import com.guo.gulimall.order.service.OrderItemService;
 import com.guo.gulimall.order.service.OrderService;
 import com.guo.gulimall.order.to.OrderCreateTO;
 import com.guo.gulimall.order.vo.*;
@@ -31,10 +32,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -50,6 +48,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     MemberFeignService memberFeignService;
+
+    @Autowired
+    OrderItemService orderItemService;
 
     @Autowired
     CartFeignService cartFeignService;
@@ -79,7 +80,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public OrderConfirmVO confirmOrder() {
         OrderConfirmVO confirmVO = new OrderConfirmVO();
-        MemberRespVO memberRespVO = LoginInterceptor.loginUser.get();
+        MemberRespVO memberRespVO = LoginUserInterceptor.loginUser.get();
 
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
 
@@ -128,20 +129,54 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         orderSubmitVOThreadLocal.set(orderSubmitVO);
         SubmitOrderResponseVO responseVO = new SubmitOrderResponseVO();
-        MemberRespVO memberRespVO = LoginInterceptor.loginUser.get();
+        MemberRespVO memberRespVO = LoginUserInterceptor.loginUser.get();
         // 下单：创建订单、验证令牌、验价、锁库存
         String orderToken = orderSubmitVO.getOrderToken();
-        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0;";
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end;";
         String key = OrderConstant.USER_ORDER_TOKEN_PREFIX + memberRespVO.getId();
-        Long result = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), Collections.singletonList(key), Collections.singletonList(orderToken));
+        Long result = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), Collections.singletonList(key), orderToken);
         if (result != null && result == 0) {
             // 验证令牌失败
             responseVO.setCode(1);
         } else {
+            // 创建订单
             OrderCreateTO order = createOrder();
-
+            // 保存订单
+            saveOrder(order);
+            // 库存锁定
+            WareSkuLockVO wareSkuLockVO = new WareSkuLockVO();
+            wareSkuLockVO.setOrderSn(order.getOrder().getOrderSn());
+            List<OrderItemVO> orderItemVOList = order.getOrderItems()
+                    .stream()
+                    .map(e -> {
+                        OrderItemVO vo = new OrderItemVO();
+                        vo.setSkuId(e.getSkuId());
+                        vo.setCount(e.getSkuQuantity());
+                        vo.setTitle(e.getSkuName());
+                        return vo;
+                    })
+                    .collect(Collectors.toList());
+            wareSkuLockVO.setLocks(orderItemVOList);
+            R r = wareFeignService.orderLockStock(wareSkuLockVO);
+            if (r.getCode() == 0) {
+                // 锁定成功
+                responseVO.setOrder(order.getOrder());
+                responseVO.setCode(0);
+            } else {
+                // 失败
+                responseVO.setCode(2);
+            }
         }
         return responseVO;
+    }
+
+    private void saveOrder(OrderCreateTO order) {
+        OrderEntity orderEntity = order.getOrder();
+        orderEntity.setModifyTime(new Date());
+        save(orderEntity);
+
+        List<OrderItemEntity> orderItems = order.getOrderItems();
+        orderItemService.saveBatch(orderItems);
     }
 
     private OrderCreateTO createOrder() {
@@ -155,6 +190,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         List<OrderItemEntity> orderItemEntities = buildOrderItems(orderSn);
         // 算价
         computePrice(orderEntity, orderItemEntities);
+
+        orderCreateTO.setOrder(orderEntity);
+        orderCreateTO.setOrderItems(orderItemEntities);
 
         return orderCreateTO;
 
@@ -173,10 +211,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         Integer growthTotal = 0;
 
         for (OrderItemEntity orderItemEntity : orderItemEntities) {
-            total=total.add(orderItemEntity.getRealAmount());
-            promotion=promotion.add(orderItemEntity.getPromotionAmount());
-            integration=integration.add(orderItemEntity.getIntegrationAmount());
-            coupon=coupon.add(orderItemEntity.getCouponAmount());
+            total = total.add(orderItemEntity.getRealAmount());
+            promotion = promotion.add(orderItemEntity.getPromotionAmount());
+            integration = integration.add(orderItemEntity.getIntegrationAmount());
+            coupon = coupon.add(orderItemEntity.getCouponAmount());
             integrationTotal += orderItemEntity.getGiftIntegration();
             growthTotal += orderItemEntity.getGiftGrowth();
         }
@@ -199,6 +237,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private OrderEntity buildOrder(String orderSn) {
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setOrderSn(orderSn);
+        orderEntity.setMemberId(LoginUserInterceptor.loginUser.get().getId());
         OrderSubmitVO orderSubmitVO = orderSubmitVOThreadLocal.get();
         R r = wareFeignService.getFare(orderSubmitVO.getAddressId());
         FareVO fareVO = r.getData(new TypeReference<FareVO>() {
@@ -248,6 +287,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderItemEntity.setSkuQuantity(orderItemVO.getCount());
         orderItemEntity.setSkuAttrsVals(StringUtils.collectionToDelimitedString(orderItemVO.getSkuAttr(), ";"));
         // 优惠信息（不做）
+
+        // 订单项订单价格信息
+        orderItemEntity.setPromotionAmount(BigDecimal.ZERO);
+        orderItemEntity.setCouponAmount(BigDecimal.ZERO);
+        orderItemEntity.setIntegrationAmount(BigDecimal.ZERO);
         // 积分信息
         orderItemEntity.setGiftGrowth(orderItemVO.getPrice().intValue());
         orderItemEntity.setGiftIntegration(orderItemVO.getPrice().intValue());

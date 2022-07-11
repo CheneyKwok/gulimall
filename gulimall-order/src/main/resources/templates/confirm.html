@@ -740,11 +740,11 @@
 				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq" th:text="${orderCofirm.actualPay}">￥28.90</span></p>
 <!--				<p class="yfze_b">寄送至： 北京 朝阳区 三环到四环之间 朝阳北路复兴国际大厦23层麦田房产 IT-中心研发二部 收货人：赵存权 188****5052</p>-->
 			</div>
-			<form action="http://order.github.com/submitOrder" method="post">
+			<form action="http://order.gulimall.com/submitOrder" method="post">
 				<input id="addressIdInput" name="addressId" hidden/>
 				<input id="actualPayInput" name="actualPay" hidden th:value="${orderCofirm.actualPay}"/>
 				<input name="orderToken" hidden th:value="${orderCofirm.orderToken}"/>
-				<button class="tijiao">提交订单</button>
+				<button class="tijiao" type="submit">提交订单</button>
 			</form>
 		</div>
 		</div>

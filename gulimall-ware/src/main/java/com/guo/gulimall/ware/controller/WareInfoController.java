@@ -4,10 +4,10 @@ import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.R;
 import com.guo.gulimall.ware.entity.WareInfoEntity;
 import com.guo.gulimall.ware.service.WareInfoService;
+import com.guo.gulimall.ware.vo.FareVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class WareInfoController {
 
     @GetMapping("/fare")
     public R getFare(@RequestParam("addressId") Long addressId) {
-        BigDecimal fare = wareInfoService.getFare(addressId);
+        FareVO fare = wareInfoService.getFare(addressId);
         return R.ok().setData(fare);
     }
 

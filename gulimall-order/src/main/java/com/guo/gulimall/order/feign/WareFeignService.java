@@ -1,6 +1,7 @@
 package com.guo.gulimall.order.feign;
 
 import com.guo.common.utils.R;
+import com.guo.gulimall.order.vo.WareSkuLockVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,4 +18,7 @@ public interface WareFeignService {
 
     @GetMapping("ware/wareinfo/fare")
     R getFare(@RequestParam("addressId") Long addressId);
+
+    @PostMapping("ware/waresku/lock/order")
+    R orderLockStock(@RequestBody WareSkuLockVO wareSkuLockVO);
 }

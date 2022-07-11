@@ -7,7 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class LoginInterceptor implements HandlerInterceptor {
+public class LoginUserInterceptor implements HandlerInterceptor {
 
     public static final ThreadLocal<MemberRespVO> loginUser = new ThreadLocal<>();
 

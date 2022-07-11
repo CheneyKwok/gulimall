@@ -24,11 +24,11 @@
             </ul>
             <ul class="header-right">
                 <li th:if="${session.loginUser != null}">
-                    <a class="aa" th:text="'欢迎，' + ${session.loginUser.nickname}"></a>
+                    <a th:text="'欢迎，' + ${session.loginUser.nickname}"></a>
                 </li>
-                <li  th:if="${session.loginUser == null}" >
-                    <a href="http://auth.gulimall.com/login.html" class="aa" style="color: red;width: 90px">你好，请登录</a> |</li>
-                <li>
+<!--                <li  th:if="${session.loginUser == null}" >-->
+<!--                    <a href="http://auth.gulimall.com/login.html" class="aa" style="color: red;width: 90px">你好，请登录</a> |</li>-->
+<!--                <li>-->
                 <li class="spacer"></li>
                 <li><a href="http://order.gulimall.com/list.html">我的订单</a></li>
                 <li class="spacer"></li>
@@ -58,7 +58,7 @@
         <div class="one_search_load" th:if="${session.loginUser}==null">
             <img src="/static/cart/img/shop_07.jpg" class="one_load_wraing">
             <span>您还没有登录！登录后购物车的商品将保存到您账号中</span>
-            <a href="/static/cart#"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
+            <a href="http://auth.gulimall.com/login.html"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
         </div>
     </div>
 </div>
