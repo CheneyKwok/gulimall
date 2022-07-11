@@ -144,6 +144,27 @@ public class CartServiceImpl implements CartService {
         ops.delete(skuId.toString());
     }
 
+    @Override
+    public List<CartItem> getCurrentUserCartItems() {
+
+        UserInfoVO userInfoVO = CartInterceptor.threadLocal.get();
+        if (userInfoVO.getUserId() == null) {
+            return null;
+        }
+        String cartKey = CartConstant.CART_PREFIX + userInfoVO.getUserId();
+        List<CartItem> cartItems = getCartItems(cartKey);
+        if (cartItems == null) {
+            return null;
+        }
+        return cartItems
+                .stream()
+                .filter(CartItem::getCheck)
+                .peek(e -> {
+
+                })
+                .collect(Collectors.toList());
+    }
+
     private BoundHashOperations<String, Object, Object> getCartOps() {
         UserInfoVO userInfoVO = CartInterceptor.threadLocal.get();
         String cartKey = CartConstant.CART_PREFIX;

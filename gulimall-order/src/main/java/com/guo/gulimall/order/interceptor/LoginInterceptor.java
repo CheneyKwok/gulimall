@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class LoginInterceptor implements HandlerInterceptor {
 
-    private ThreadLocal<MemberRespVO> loginUser = new ThreadLocal<>();
+    public static final ThreadLocal<MemberRespVO> loginUser = new ThreadLocal<>();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

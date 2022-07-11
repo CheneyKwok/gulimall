@@ -1,19 +1,15 @@
 package com.guo.gulimall.ware.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.guo.gulimall.ware.entity.WareInfoEntity;
-import com.guo.gulimall.ware.service.WareInfoService;
 import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.R;
+import com.guo.gulimall.ware.entity.WareInfoEntity;
+import com.guo.gulimall.ware.service.WareInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -29,6 +25,13 @@ import com.guo.common.utils.R;
 public class WareInfoController {
     @Autowired
     private WareInfoService wareInfoService;
+
+
+    @GetMapping("/fare")
+    public R getFare(@RequestParam("addressId") Long addressId) {
+        BigDecimal fare = wareInfoService.getFare(addressId);
+        return R.ok().setData(fare);
+    }
 
     /**
      * 列表

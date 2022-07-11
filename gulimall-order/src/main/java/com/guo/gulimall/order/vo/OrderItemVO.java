@@ -16,7 +16,6 @@ public class OrderItemVO {
 
     private String image;
 
-
     private List<String> skuAttr;
 
     private BigDecimal price;
@@ -24,4 +23,6 @@ public class OrderItemVO {
     private Integer count;
 
     private BigDecimal totalPrice;
+
+    private BigDecimal weight;
 }

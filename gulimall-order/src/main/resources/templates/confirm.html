@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <html>
 
 	<head>
@@ -597,8 +598,8 @@
 			</div>
 
 			<!--地址-->
-			<div class="top-3">
-				<p>家里</p><span>齐天大圣  北京市  昌平区城区晨曦小区-16号楼 吉利大学  150****2245</span>
+			<div class="top-3 addr-item" th:each="address:${orderCofirm.addressList}">
+				<p th:attr="def=${address.defaultStatus}, addrId=${address.id}">[[${address.name}]]</p><span>[[${address.province}]]  [[${address.city}]] [[${address.detailAddress}]] [[${address.phone}]]</span>
 			</div>
 			<p class="p2">更多地址︾</p>
 			<div class="hh1"/></div>
@@ -664,11 +665,17 @@
 				<h5>商家：谷粒学院自营</h5>
 				<div><button>换购</button><span>已购满20.00元，再加49.90元，可返回购物车领取赠品</span></div>
 				<!--图片-->
-				<div class="yun1">
-					<img src="/static/order/confirm/img/im_03.png" class="yun"/>
+				<div class="yun1" th:each="item:${orderCofirm.itemList}">
+					<img th:src="${item.image}" class="yun"/>
 					<div class="mi">
-						<p>小米（MI）小米手环2 智能运动 心率检测 来 <span style="color: red;"> ￥ 149.00</span> <span> x1 </span> <span>有货</span></p>
-						<p>电提醒 久坐提醒 LED显示器 时间显示 防水记 <span>0.095kg</span></p>
+						<p th:text="${item.title}">小米（MI）小米手环2 智能运动 心率检测 来
+						</p>
+						<p>
+							<span style="color: red;" th:text="${#numbers.formatDecimal(item.price,1,2)}"></span>
+							<span th:text="${item.count}"> x1 </span>
+							<span th:text="${orderCofirm.skuStockMap.get(item.skuId) ? '有货' : '无货'}">有货</span>
+						</p>
+<!--						<p> <span>0.095kg</span></p>-->
 						<p class="tui-1"><img src="/static/order/confirm/img/i_07.png" />支持7天无理由退货</p>
 					</div>
 				</div>
@@ -706,9 +713,9 @@
 		<div class="xia">
 			<div class="qian">
 				<p class="qian_y">
-					<span>1</span>
+					<span th:text="${orderCofirm.getCount()}">1</span>
 					<span>件商品，总商品金额：</span>
-					<span class="rmb">￥28.90</span>
+					<span class="rmb" th:text="${orderCofirm.totalPay}">￥28.90</span>
 				</p>
 				<p class="qian_y">
 					<span>返现：</span>
@@ -716,7 +723,7 @@
 				</p>
 				<p class="qian_y">
 					<span>运费： </span>
-					<span class="rmb"> &nbsp ￥0.00</span>
+					<span class="rmb"> &nbsp ￥<b id="fare"></b></span>
 				</p>
 				<p class="qian_y">
 					<span>服务费： </span>
@@ -730,10 +737,15 @@
 			</div>
 
 			<div class="yfze">
-				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥28.90</span></p>
-				<p class="yfze_b">寄送至： 北京 朝阳区 三环到四环之间 朝阳北路复兴国际大厦23层麦田房产 IT-中心研发二部 收货人：赵存权 188****5052</p>
+				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq" th:text="${orderCofirm.actualPay}">￥28.90</span></p>
+<!--				<p class="yfze_b">寄送至： 北京 朝阳区 三环到四环之间 朝阳北路复兴国际大厦23层麦田房产 IT-中心研发二部 收货人：赵存权 188****5052</p>-->
 			</div>
-			<button class="tijiao">提交订单</button>
+			<form action="http://order.github.com/submitOrder" method="post">
+				<input id="addressIdInput" name="addressId" hidden/>
+				<input id="actualPayInput" name="actualPay" hidden th:value="${orderCofirm.actualPay}"/>
+				<input name="orderToken" hidden th:value="${orderCofirm.orderToken}"/>
+				<button class="tijiao">提交订单</button>
+			</form>
 		</div>
 		</div>
 
@@ -961,13 +973,37 @@
                 },function(){
                     $('.header-l-d').css('display','none')
                 })
-                $('.header-r-4').hover(function(){
+				$('.header-r-4').hover(function(){
                     $('.h-r-1').css('display','block')
                 },function(){
                     $('.h-r-1').css('display','none')
                 })
+
+				highlight()
+				getFare($(".addr-item p[def='1']").attr("addrId"))
+
             })
 
+			function highlight() {
+				$(".addr-item p").css({"border": "2px solid gray"});
+				$(".addr-item p[def='1']").css({"border": "2px solid red"});
+
+			}
+
+			$(".addr-item p").click(function (){
+				$(".addr-item p").attr("def", "0")
+				$(this).attr("def", "1")
+				highlight()
+				getFare($(this).attr("addrId"))
+			})
+
+			function getFare(addrId) {
+				$("#addressIdInput").val(addrId)
+				$.get("http://gulimall.com/api/ware/wareinfo/fare?addressId=" + addrId, data =>{
+					console.log(data)
+					$("#fare").text(data.data)
+				})
+			}
 
 		</script>
 	</body>

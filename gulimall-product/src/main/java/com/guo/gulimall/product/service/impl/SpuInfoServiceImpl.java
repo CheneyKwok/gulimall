@@ -1,13 +1,19 @@
 package com.guo.gulimall.product.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guo.common.constant.ProductConstant;
 import com.guo.common.to.SkuHasStockTo;
 import com.guo.common.to.SkuReductionTo;
 import com.guo.common.to.SpuBoundTo;
 import com.guo.common.to.es.SKuEsModule;
+import com.guo.common.utils.PageUtils;
+import com.guo.common.utils.Query;
 import com.guo.common.utils.R;
+import com.guo.gulimall.product.dao.SpuInfoDao;
 import com.guo.gulimall.product.dto.*;
 import com.guo.gulimall.product.entity.*;
 import com.guo.gulimall.product.feign.CouponFeignService;
@@ -17,21 +23,16 @@ import com.guo.gulimall.product.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.guo.common.utils.PageUtils;
-import com.guo.common.utils.Query;
-
-import com.guo.gulimall.product.dao.SpuInfoDao;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service("spuInfoService")
@@ -294,6 +295,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }
 
 
+    }
+
+    @Override
+    public SpuInfoEntity getSpuInfoBySkuId(Long skuId) {
+        SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
+        return getById(skuInfo.getSpuId());
     }
 
 
