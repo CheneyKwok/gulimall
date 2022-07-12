@@ -23,6 +23,11 @@ mybatis-plus:
       id-type: auto
 seata:
   tx-service-group: ware_tx_group
+  service:
+    grouplist:
+      default: 192.168.56.10:8091
+    vgroup-mapping:
+      ware_tx_group: default
   registry:
     nacos:
       server-addr: 192.168.56.10:8848

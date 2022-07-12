@@ -20,6 +20,18 @@ spring:
     cache: false
   redis:
     host: 192.168.56.10
+seata:
+  tx-service-group: product_tx_group
+  service:
+    grouplist:
+      default: 192.168.56.10:8091
+    vgroup-mapping:
+      product_tx_group: default
+  registry:
+    nacos:
+      server-addr: 192.168.56.10:8848
+      username: nacos
+      password: nacos
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:

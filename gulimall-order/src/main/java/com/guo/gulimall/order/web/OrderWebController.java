@@ -6,6 +6,7 @@ import com.guo.gulimall.order.service.OrderService;
 import com.guo.gulimall.order.vo.OrderConfirmVO;
 import com.guo.gulimall.order.vo.OrderSubmitVO;
 import com.guo.gulimall.order.vo.SubmitOrderResponseVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+
+@Slf4j
 @Controller
 public class OrderWebController {
 
@@ -56,6 +59,7 @@ public class OrderWebController {
             attributes.addFlashAttribute("msg", msg);
             return "redirect:http://order.gulimall.com/toTrade";
         } catch (Exception e) {
+            log.error(e.getMessage());
             if (e instanceof NoStockException) {
                 String msg = e.getMessage();
                 attributes.addFlashAttribute("msg", msg);

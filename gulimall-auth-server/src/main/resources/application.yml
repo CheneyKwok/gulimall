@@ -11,5 +11,17 @@ spring:
 feign:
   httpclient:
     connection-timeout: 5000
+seata:
+  tx-service-group: auth_tx_group
+  service:
+    grouplist:
+      default: 192.168.56.10:8091
+    vgroup-mapping:
+      auth_tx_group: default
+  registry:
+    nacos:
+      server-addr: 192.168.56.10:8848
+      username: nacos
+      password: nacos
 server:
   port: 99

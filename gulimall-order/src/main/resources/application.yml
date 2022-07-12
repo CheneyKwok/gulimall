@@ -28,9 +28,6 @@ spring:
     cache: false
 seata:
   tx-service-group: order_tx_group
-  config:
-    file:
-      name: file.conf
   service:
     grouplist:
       default: 192.168.56.10:8091
