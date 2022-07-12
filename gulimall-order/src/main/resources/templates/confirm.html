@@ -950,6 +950,7 @@
 				<img src="/static/order/confirm/img/5698dc16Nb2ab99df.jpg" />
 				<img src="/static/order/confirm/img/56a89b8fNfbaade9a.jpg" />
 			</p>
+			<input hidden id="msg" th:value="${msg}"/>
 		</div>
 		<script>
 			$(document).ready(function () {
@@ -982,6 +983,11 @@
 				highlight()
 				getFare($(".addr-item p[def='1']").attr("addrId"))
 
+				let msg = $("#msg").val();
+				if (msg != null && msg !== "") {
+					alert(msg)
+				}
+
             })
 
 			function highlight() {
@@ -1001,7 +1007,7 @@
 				$("#addressIdInput").val(addrId)
 				$.get("http://gulimall.com/api/ware/wareinfo/fare?addressId=" + addrId, data =>{
 					console.log(data)
-					$("#fare").text(data.data)
+					$("#fare").text(data.data.fare)
 				})
 			}
 

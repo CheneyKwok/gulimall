@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guo.common.constant.OrderConstant;
+import com.guo.common.excepiton.NoStockException;
 import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.Query;
 import com.guo.common.utils.R;
@@ -22,10 +23,12 @@ import com.guo.gulimall.order.service.OrderItemService;
 import com.guo.gulimall.order.service.OrderService;
 import com.guo.gulimall.order.to.OrderCreateTO;
 import com.guo.gulimall.order.vo.*;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -77,6 +80,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return new PageUtils(page);
     }
 
+
     @Override
     public OrderConfirmVO confirmOrder() {
         OrderConfirmVO confirmVO = new OrderConfirmVO();
@@ -124,6 +128,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return confirmVO;
     }
 
+
+    @GlobalTransactional
+    @Transactional()
     @Override
     public SubmitOrderResponseVO submitOrder(OrderSubmitVO orderSubmitVO) {
 
@@ -160,11 +167,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             R r = wareFeignService.orderLockStock(wareSkuLockVO);
             if (r.getCode() == 0) {
                 // 锁定成功
+                // 模拟远程扣除积分异常
+                int i = 1 / 0;
                 responseVO.setOrder(order.getOrder());
                 responseVO.setCode(0);
             } else {
                 // 失败
-                responseVO.setCode(2);
+                throw new NoStockException("库存不足");
             }
         }
         return responseVO;
@@ -264,7 +273,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                         return orderItemEntity;
                     }).collect(Collectors.toList());
         }
-        return null;
+        return new ArrayList<>();
     }
 
     private OrderItemEntity buildOrderItem(OrderItemVO orderItemVO) {

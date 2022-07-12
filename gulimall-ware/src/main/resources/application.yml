@@ -21,6 +21,13 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+seata:
+  tx-service-group: ware_tx_group
+  registry:
+    nacos:
+      server-addr: 192.168.56.10:8848
+      username: nacos
+      password: nacos
 server:
   port: 11000
 logging:
