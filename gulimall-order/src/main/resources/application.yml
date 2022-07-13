@@ -28,12 +28,13 @@ spring:
     cache: false
 seata:
   tx-service-group: order_tx_group
-  service:
-    grouplist:
-      default: 192.168.56.10:8091
-    vgroup-mapping:
-      order_tx_group: default
   registry:
+    nacos:
+      server-addr: 192.168.56.10:8848
+      username: nacos
+      password: nacos
+  config:
+    type: nacos
     nacos:
       server-addr: 192.168.56.10:8848
       username: nacos

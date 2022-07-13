@@ -10,18 +10,6 @@ spring:
   redis:
     host: 192.168.56.10
     port: 6379
-seata:
-  tx-service-group: cart_tx_group
-  service:
-    grouplist:
-      default: 192.168.56.10:8091
-    vgroup-mapping:
-      cart_tx_group: default
-  registry:
-    nacos:
-      server-addr: 192.168.56.10:8848
-      username: nacos
-      password: nacos
 gulimall:
   thread:
     core-pool-size: 20

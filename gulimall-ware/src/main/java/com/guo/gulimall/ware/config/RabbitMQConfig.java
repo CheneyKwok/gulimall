@@ -1,4 +1,4 @@
-package com.guo.gulimall.order.config;
+package com.guo.gulimall.ware.config;
 
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,41 +66,42 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue orderDelayQueue() {
+    public Queue stockDelayQueue() {
 
         Map<String, Object> arguments = new HashMap<>();
 
-        arguments.put("x-dead-letter-exchange", "order-event-exchange");
-        arguments.put("x-dead-letter-routing-key", "order.release");
-        arguments.put("x-message-ttl", 60000);
-        return new Queue("order.delay.queue", true, false, false, arguments);
+        arguments.put("x-dead-letter-exchange", "stock-event-exchange");
+        arguments.put("x-dead-letter-routing-key", "stock.release");
+        arguments.put("x-message-ttl", 120000);
+        return new Queue("stock.delay.queue", true, false, false, arguments);
     }
 
     @Bean
-    public Queue orderReleaseQueue() {
-        return new Queue("order.release.queue", true, false, false);
+    public Queue stockReleaseQueue() {
+        return new Queue("stock.release.queue", true, false, false);
     }
 
     @Bean
-    public Exchange orderEventExchange() {
-        return new TopicExchange("order-event-exchange", true, false);
+    public Exchange stockEventExchange() {
+        return new TopicExchange("stock-event-exchange", true, false);
     }
 
 
     @Bean
-    public Binding orderCreateBinding() {
-        return new Binding("order.delay.queue",
+    public Binding stockLockedBinding() {
+        return new Binding("stock.delay.queue",
                 Binding.DestinationType.QUEUE,
-                "order-event-exchange",
-                "order.create", null);
+                "stock-event-exchange",
+                "stock.locked", null);
     }
 
 
     @Bean
-    public Binding orderReleaseBinding() {
-        return new Binding("order.release.queue",
+    public Binding stockReleaseBinding() {
+        return new Binding("stock.release.queue",
                 Binding.DestinationType.QUEUE,
-                "order-event-exchange",
-                "order.release", null);
+                "stock-event-exchange",
+                "stock.release.#", null);
     }
+
 }

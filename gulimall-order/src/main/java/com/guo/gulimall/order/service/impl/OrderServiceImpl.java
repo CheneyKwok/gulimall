@@ -23,7 +23,6 @@ import com.guo.gulimall.order.service.OrderItemService;
 import com.guo.gulimall.order.service.OrderService;
 import com.guo.gulimall.order.to.OrderCreateTO;
 import com.guo.gulimall.order.vo.*;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -129,8 +128,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
 
-    @GlobalTransactional
-    @Transactional()
+//    @GlobalTransactional
+    @Transactional
     @Override
     public SubmitOrderResponseVO submitOrder(OrderSubmitVO orderSubmitVO) {
 
