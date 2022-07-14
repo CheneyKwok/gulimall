@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guo.common.excepiton.NoStockException;
 import com.guo.common.to.SkuHasStockTo;
+import com.guo.common.to.mq.OrderTO;
 import com.guo.common.to.mq.StockLockedTO;
 import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.Query;
@@ -14,6 +15,7 @@ import com.guo.gulimall.ware.dao.WareSkuDao;
 import com.guo.gulimall.ware.entity.WareOrderTaskDetailEntity;
 import com.guo.gulimall.ware.entity.WareOrderTaskEntity;
 import com.guo.gulimall.ware.entity.WareSkuEntity;
+import com.guo.gulimall.ware.enums.WareTaskStatusEnum;
 import com.guo.gulimall.ware.feign.OrderFeignService;
 import com.guo.gulimall.ware.feign.ProductFeignService;
 import com.guo.gulimall.ware.service.WareOrderTaskDetailService;
@@ -68,9 +70,32 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             Integer status = orderFeignService.getOrderStatus(orderTask.getOrderSn());
             // 订单被取消
             if (status == null || status == 4) {
-                baseMapper.unLockStock(orderDetail.getSkuId(), orderDetail.getWareId(), orderDetail.getSkuNum());
+                unLockStock(orderDetail.getSkuId(), orderDetail.getWareId(), orderDetail.getSkuNum(), orderDetail.getId());
             }
         }
+    }
+
+    private void unLockStock(Long skuId, Long wareId, Integer skuNum, Long orderDetailId) {
+        baseMapper.unLockStock(skuId, wareId, skuNum);
+        log.info("解锁 sku={} wareId={} 库存{}件", skuId, wareId, skuNum);
+        WareOrderTaskDetailEntity detail = WareOrderTaskDetailEntity
+                .builder()
+                .id(orderDetailId)
+                .lockStatus(WareTaskStatusEnum.hasUnLocked.getCode())// 变为已解锁
+                .build();
+        orderTaskDetailService.updateById(detail);
+    }
+
+    @Override
+    public void unLockStock(OrderTO orderTO) {
+
+        // 查询库存工作单
+        WareOrderTaskEntity orderTask = orderTaskService.lambdaQuery().eq(WareOrderTaskEntity::getOrderSn, orderTO.getOrderSn()).one();
+        List<WareOrderTaskDetailEntity> unLockOrderList = orderTaskDetailService.lambdaQuery()
+                .eq(WareOrderTaskDetailEntity::getTaskId, orderTask.getId())
+                .eq(WareOrderTaskDetailEntity::getLockStatus, WareTaskStatusEnum.Locked.getCode())
+                .list();
+        unLockOrderList.forEach(e -> unLockStock(e.getSkuId(), e.getWareId(), e.getSkuNum(), e.getId()));
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guo.common.constant.OrderConstant;
 import com.guo.common.excepiton.NoStockException;
+import com.guo.common.to.mq.OrderTO;
 import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.Query;
 import com.guo.common.utils.R;
@@ -24,7 +25,9 @@ import com.guo.gulimall.order.service.OrderItemService;
 import com.guo.gulimall.order.service.OrderService;
 import com.guo.gulimall.order.to.OrderCreateTO;
 import com.guo.gulimall.order.vo.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -44,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
@@ -133,6 +137,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
 
+    /**'
+     *
+     * 分布式事务解决方案
+     * 1. Seata 的 AT（二阶段提交）、TCC（补偿性事务）。不适合高并发的场景
+     * 2. 柔性事务：可靠消息 + 最终一致性方案（异步确保型）。其中消息的可靠性非常重要
+     *
+     */
+
 //    @GlobalTransactional
     @Transactional
     @Override
@@ -192,7 +204,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderEntity orderEntity = getById(entity.getId());
         if (Objects.equals(orderEntity.getStatus(), OrderStatusEnum.CREATE_NEW.getCode())) {
             // 未支付的超时自动关单
-            lambdaUpdate().set(OrderEntity::getStatus, OrderStatusEnum.CANCLED.getCode()).eq(OrderEntity::getId, entity.getId());
+            orderEntity.setStatus(OrderStatusEnum.CANCLED.getCode());
+            lambdaUpdate()
+                    .set(OrderEntity::getStatus, orderEntity.getStatus())
+                    .eq(OrderEntity::getId, entity.getId())
+                    .update();
+            log.info("关闭超时未支付的订单:{}", entity.getOrderSn());
+            OrderTO orderTO = new OrderTO();
+            BeanUtils.copyProperties(orderEntity, orderTO);
+            rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", orderTO);
         }
 
     }
@@ -200,6 +220,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private void saveOrder(OrderCreateTO order) {
         OrderEntity orderEntity = order.getOrder();
         orderEntity.setModifyTime(new Date());
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
         save(orderEntity);
 
         List<OrderItemEntity> orderItems = order.getOrderItems();
