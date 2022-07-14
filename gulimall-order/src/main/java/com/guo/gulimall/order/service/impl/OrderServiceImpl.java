@@ -14,6 +14,7 @@ import com.guo.common.vo.MemberRespVO;
 import com.guo.gulimall.order.dao.OrderDao;
 import com.guo.gulimall.order.entity.OrderEntity;
 import com.guo.gulimall.order.entity.OrderItemEntity;
+import com.guo.gulimall.order.enums.OrderStatusEnum;
 import com.guo.gulimall.order.feign.CartFeignService;
 import com.guo.gulimall.order.feign.MemberFeignService;
 import com.guo.gulimall.order.feign.ProductFeignService;
@@ -23,6 +24,7 @@ import com.guo.gulimall.order.service.OrderItemService;
 import com.guo.gulimall.order.service.OrderService;
 import com.guo.gulimall.order.to.OrderCreateTO;
 import com.guo.gulimall.order.vo.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -68,6 +70,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -149,6 +154,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             OrderCreateTO order = createOrder();
             // 保存订单
             saveOrder(order);
+            // 订单
             // 库存锁定
             WareSkuLockVO wareSkuLockVO = new WareSkuLockVO();
             wareSkuLockVO.setOrderSn(order.getOrder().getOrderSn());
@@ -167,7 +173,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             if (r.getCode() == 0) {
                 // 锁定成功
                 // 模拟远程扣除积分异常
-                int i = 1 / 0;
+//                int i = 1 / 0;
+                // 向 MQ 发送 订单创建成功消息
+
+                rabbitTemplate.convertAndSend("order-event-exchange", "order.create", order.getOrder());
                 responseVO.setOrder(order.getOrder());
                 responseVO.setCode(0);
             } else {
@@ -176,6 +185,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             }
         }
         return responseVO;
+    }
+
+    @Override
+    public void closeOrder(OrderEntity entity) {
+        OrderEntity orderEntity = getById(entity.getId());
+        if (Objects.equals(orderEntity.getStatus(), OrderStatusEnum.CREATE_NEW.getCode())) {
+            // 未支付的超时自动关单
+            lambdaUpdate().set(OrderEntity::getStatus, OrderStatusEnum.CANCLED.getCode()).eq(OrderEntity::getId, entity.getId());
+        }
+
     }
 
     private void saveOrder(OrderCreateTO order) {

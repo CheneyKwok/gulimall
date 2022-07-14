@@ -49,10 +49,4 @@ public class RabbitMQTestService {
         }
     }
 
-    @RabbitListener(queues = {"order.release.queue"})
-    public void listenerDelay(OrderEntity entity, Channel channel, Message message) throws IOException {
-        log.info("收到过期的订单消息：准备关闭订单: {}", entity);
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-    }
-
 }
