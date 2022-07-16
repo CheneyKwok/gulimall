@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -70,7 +71,10 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             Integer status = orderFeignService.getOrderStatus(orderTask.getOrderSn());
             // 订单被取消
             if (status == null || status == 4) {
-                unLockStock(orderDetail.getSkuId(), orderDetail.getWareId(), orderDetail.getSkuNum(), orderDetail.getId());
+                //为保证幂等性，只有当工作单详情处于被锁定的情况下才进行解锁
+                if (Objects.equals(orderDetail.getLockStatus(), WareTaskStatusEnum.Locked.getCode())) {
+                    unLockStock(orderDetail.getSkuId(), orderDetail.getWareId(), orderDetail.getSkuNum(), orderDetail.getId());
+                }
             }
         }
     }

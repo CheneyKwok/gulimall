@@ -217,6 +217,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     }
 
+    @Override
+    public PayVo getOrderPay(String orderSn) {
+        PayVo payVo = new PayVo();
+        OrderEntity orderEntity = lambdaQuery().ge(OrderEntity::getOrderSn, orderSn).one();
+        payVo.setOut_trade_no(orderSn);
+        String payAmount = orderEntity.getPayAmount().setScale(2, BigDecimal.ROUND_UP).toString();
+        payVo.setTotal_amount(payAmount);
+        List<OrderItemEntity> orderItemEntities = orderItemService.lambdaQuery().eq(OrderItemEntity::getOrderSn, orderSn).list();
+        OrderItemEntity orderItemEntity = orderItemEntities.get(0);
+        payVo.setSubject(orderItemEntity.getSkuName());
+        payVo.setBody(orderItemEntity.getSkuAttrsVals());
+        return payVo;
+    }
+
     private void saveOrder(OrderCreateTO order) {
         OrderEntity orderEntity = order.getOrder();
         orderEntity.setModifyTime(new Date());
