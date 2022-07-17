@@ -15,6 +15,7 @@ import com.guo.common.vo.MemberRespVO;
 import com.guo.gulimall.order.dao.OrderDao;
 import com.guo.gulimall.order.entity.OrderEntity;
 import com.guo.gulimall.order.entity.OrderItemEntity;
+import com.guo.gulimall.order.entity.PaymentInfoEntity;
 import com.guo.gulimall.order.enums.OrderStatusEnum;
 import com.guo.gulimall.order.feign.CartFeignService;
 import com.guo.gulimall.order.feign.MemberFeignService;
@@ -23,6 +24,7 @@ import com.guo.gulimall.order.feign.WareFeignService;
 import com.guo.gulimall.order.interceptor.LoginUserInterceptor;
 import com.guo.gulimall.order.service.OrderItemService;
 import com.guo.gulimall.order.service.OrderService;
+import com.guo.gulimall.order.service.PaymentInfoService;
 import com.guo.gulimall.order.to.OrderCreateTO;
 import com.guo.gulimall.order.vo.*;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +64,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     CartFeignService cartFeignService;
+
+    @Autowired
+    PaymentInfoService paymentInfoService;
 
     @Autowired
     WareFeignService wareFeignService;
@@ -137,12 +142,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
 
-    /**'
-     *
+    /**
+     * '
+     * <p>
      * 分布式事务解决方案
      * 1. Seata 的 AT（二阶段提交）、TCC（补偿性事务）。不适合高并发的场景
      * 2. 柔性事务：可靠消息 + 最终一致性方案（异步确保型）。其中消息的可靠性非常重要
-     *
      */
 
 //    @GlobalTransactional
@@ -231,6 +236,57 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return payVo;
     }
 
+    /**
+     * 给远程服务使用的
+     * 查询当前登录用户的所有订单详情数据（分页）
+     */
+    @Override
+    public PageUtils queryPageWithItem(Map<String, Object> params) {
+
+        MemberRespVO memberRespVO = LoginUserInterceptor.loginUser.get();
+
+        QueryWrapper<OrderEntity> wrapper = new QueryWrapper<>();
+        //降序排列
+        wrapper.eq("member_id", memberRespVO.getId()).orderByDesc("id");
+        IPage<OrderEntity> page = this.page(
+                new Query<OrderEntity>().getPage(params),
+                wrapper
+        );
+
+        List<OrderEntity> orderEntities = page
+                .getRecords()
+                .stream()
+                .peek((orderEntity) -> {
+                    List<OrderItemEntity> orderItemEntities = orderItemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", orderEntity.getOrderSn()));
+                    orderEntity.setItems(orderItemEntities);
+                })
+                .collect(Collectors.toList());
+
+        //重新设置返回数据
+        page.setRecords(orderEntities);
+
+        return new PageUtils(page);
+    }
+
+    @Override
+    public String handlePayResult(PayAsyncVo payAsyncVo) {
+        //1.保存交易流水这个对象 PaymentInfoEntity
+        PaymentInfoEntity paymentInfoEntity = new PaymentInfoEntity();
+        paymentInfoEntity.setAlipayTradeNo(payAsyncVo.getTrade_no());
+        paymentInfoEntity.setOrderSn(payAsyncVo.getOut_trade_no());//修改数据库为唯一属性
+        paymentInfoEntity.setPaymentStatus(payAsyncVo.getTrade_status());
+        paymentInfoEntity.setCallbackTime(payAsyncVo.getNotify_time());
+        paymentInfoService.save(paymentInfoEntity);
+
+        //2。修改订单状态
+        if (payAsyncVo.getTrade_status().equals("TRADE_SUCCESS") || payAsyncVo.getTrade_status().equals("TRADE_FINISHED")) {
+            //支付成功
+            String outTradeNo = payAsyncVo.getOut_trade_no();
+            this.baseMapper.updateOrderStatus(outTradeNo, OrderStatusEnum.PAYED.getCode());
+        }
+        return "success";
+    }
+
     private void saveOrder(OrderCreateTO order) {
         OrderEntity orderEntity = order.getOrder();
         orderEntity.setModifyTime(new Date());
@@ -265,9 +321,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //总价
         BigDecimal total = BigDecimal.ZERO;
         //优惠价格
-        BigDecimal promotion=new BigDecimal("0.0");
-        BigDecimal integration=new BigDecimal("0.0");
-        BigDecimal coupon=new BigDecimal("0.0");
+        BigDecimal promotion = new BigDecimal("0.0");
+        BigDecimal integration = new BigDecimal("0.0");
+        BigDecimal coupon = new BigDecimal("0.0");
         //积分
         Integer integrationTotal = 0;
         Integer growthTotal = 0;
@@ -318,7 +374,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private List<OrderItemEntity> buildOrderItems(String orderSn) {
         List<OrderItemVO> currentUserCartItems = cartFeignService.getCurrentUserCartItems();
         if (!CollectionUtils.isEmpty(currentUserCartItems)) {
-           return currentUserCartItems
+            return currentUserCartItems
                     .stream()
                     .map(e -> {
                         OrderItemEntity orderItemEntity = buildOrderItem(e);

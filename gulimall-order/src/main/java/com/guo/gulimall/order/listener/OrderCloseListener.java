@@ -27,6 +27,7 @@ public class OrderCloseListener {
         log.info("收到过期的订单消息：准备关闭订单: {}", entity.getOrderSn());
         try {
             orderService.closeOrder(entity);
+            // todo 手动调用支付宝关单功能，在最后一刻支付但由于异步延迟导致订单已关单，库存解锁但买家已经支付
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (IOException e) {
             log.error(e.getMessage());

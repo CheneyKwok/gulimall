@@ -26,6 +26,9 @@ spring:
         acknowledge-mode: manual
   thymeleaf:
     cache: false
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
 seata:
   tx-service-group: order_tx_group
   registry:
