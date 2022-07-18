@@ -8,6 +8,7 @@ class GulimallCouponApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
