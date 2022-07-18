@@ -1,15 +1,19 @@
 package com.guo.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.Query;
+import com.guo.common.utils.R;
 import com.guo.gulimall.product.dao.SkuInfoDao;
 import com.guo.gulimall.product.entity.SkuImagesEntity;
 import com.guo.gulimall.product.entity.SkuInfoEntity;
 import com.guo.gulimall.product.entity.SpuInfoDescEntity;
+import com.guo.gulimall.product.feign.SecKillFeignService;
 import com.guo.gulimall.product.service.*;
+import com.guo.gulimall.product.vo.SecKillInfoVO;
 import com.guo.gulimall.product.vo.SkuItemSaleAttrVO;
 import com.guo.gulimall.product.vo.SkuItemVO;
 import com.guo.gulimall.product.vo.SpuItemAttrGroupVO;
@@ -38,6 +42,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @Autowired
+    SecKillFeignService secKillFeignService;
 
     @Autowired
     ThreadPoolExecutor executor;
@@ -125,14 +132,25 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             skuItemVO.setDesc(spuInfoDesc);
         }, executor);
 
+
         // 5. 获取 spu 的规格参数信息
         CompletableFuture<Void> groupFuture = infoFuture.thenAcceptAsync(info -> {
             List<SpuItemAttrGroupVO> attrGroups = attrGroupService.getAttrGroupWithAttrBySpuId(info.getSpuId(), info.getCatalogId());
             skuItemVO.setGroupAttrs(attrGroups);
         }, executor);
 
+        // 6. 查询当前 sku 是否参与秒杀活动
+        CompletableFuture<Void> secKillFuture = CompletableFuture.runAsync(() -> {
+            R r = secKillFeignService.getSkuSecKillInfo(skuId);
+            if (r.getCode() == 0) {
+                SecKillInfoVO secKillInfoVO = r.getData(new TypeReference<SecKillInfoVO>() {
+                });
+                skuItemVO.setSecKillInfoVO(secKillInfoVO);
+            }
+        }, executor);
+
         try {
-            CompletableFuture.allOf(imagesFuture, saleAttrFuture, descFuture, groupFuture).get();
+            CompletableFuture.allOf(imagesFuture, saleAttrFuture, descFuture, groupFuture, secKillFuture).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

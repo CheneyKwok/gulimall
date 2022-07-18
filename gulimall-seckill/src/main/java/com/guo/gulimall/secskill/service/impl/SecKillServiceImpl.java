@@ -18,10 +18,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -90,6 +93,30 @@ public class SecKillServiceImpl implements SecKillService {
         return null;
     }
 
+    @Override
+    public SecKillSkuRedisTO getSkuSecKillInfo(Long skuId) {
+        BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SKU_CACHE_PREFIX);
+
+        Set<String> keys = hashOps.keys();
+        if (!CollectionUtils.isEmpty(keys)) {
+            String regx = "\\d-" + skuId;
+            Optional<String> first = keys.stream().filter(e -> Pattern.matches(regx, e)).findFirst();
+            if (first.isPresent()) {
+                String val = hashOps.get(first.get());
+                SecKillSkuRedisTO skuRedisTO = JSON.parseObject(val, SecKillSkuRedisTO.class);
+                if (skuRedisTO != null) {
+                    long now = System.currentTimeMillis();
+                    if (now < skuRedisTO.getStartTime() || now > skuRedisTO.getEndTime()) {
+                        skuRedisTO.setRandomCode(null);
+                    }
+                    return skuRedisTO;
+                }
+            }
+
+        }
+        return null;
+    }
+
     private void saveSessionInfo(List<SecKillSessionWithSkusVO> sessions) {
         for (SecKillSessionWithSkusVO session : sessions) {
 //            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -99,7 +126,7 @@ public class SecKillServiceImpl implements SecKillService {
                     .map(e -> e.getPromotionSessionId() +"-" + e.getSkuId())
                     .collect(Collectors.toList());
             Boolean hasKey = redisTemplate.hasKey(key);
-            if (Boolean.FALSE.equals(hasKey)) {
+            if (!CollectionUtils.isEmpty(collect) && Boolean.FALSE.equals(hasKey)) {
                 redisTemplate.opsForList().leftPushAll(key, collect);
             }
         }

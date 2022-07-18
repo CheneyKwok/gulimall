@@ -589,15 +589,19 @@
   $.get("http://seckill.gulimall.com/currentSecKillSkus", function (resp) {
     if (resp.data.length > 0) {
       resp.data.forEach(function (item) {
-        $("<li onclick='to_href(" + item.skuId + ")'></li>")
+        $("<li onclick='toDetail(" + item.skuId + ")'></li>")
                 .append($("<img style='width: 130px; height: 130px' src =' " + item.skuInfoVO.skuDefaultImg + " '/>"))
                 .append($("<p>" + item.skuInfoVO.skuTitle + "</p>"))
                 .append($("<span>" + item.secKillPrice + "</span>"))
-                .append($("<s> " + item.skuInfoVO.price + "</s>"))
+                .append($("<s>" + item.skuInfoVO.price + "</s>"))
                 .appendTo("#seckillSContent");
       })
     }
   });
+
+  function toDetail(skuId) {
+    location.href = "http://item.gulimall.com/" + skuId + ".html";
+  }
 
 </script>
 <script type="text/javascript" src="/static/index/js/text.js"></script>

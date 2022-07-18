@@ -21,6 +21,8 @@ public class SkuItemVO {
 
     private List<SpuItemAttrGroupVO> groupAttrs;
 
+    private SecKillInfoVO secKillInfoVO;
+
     private Boolean hasStock = true;
 
 }
