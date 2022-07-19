@@ -28,11 +28,11 @@ public class SecKillSkuRedisTO {
     /**
      * 秒杀总量
      */
-    private BigDecimal secKillCount;
+    private Integer secKillCount;
     /**
      * 每人限购数量
      */
-    private BigDecimal secKillLimit;
+    private Integer secKillLimit;
     /**
      * 排序
      */

@@ -11,3 +11,8 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
   redis:
     host: 192.168.56.10
+  rabbitmq:
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    virtual-host: /
+    host: 192.168.56.10

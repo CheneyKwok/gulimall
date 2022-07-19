@@ -1,8 +1,8 @@
-package com.guo.gulimall.order.config;
+package com.guo.gulimall.secskill.config;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Slf4j
@@ -65,63 +63,5 @@ public class RabbitMQConfig {
         });
     }
 
-    @Bean
-    public Queue orderDelayQueue() {
 
-        Map<String, Object> arguments = new HashMap<>();
-
-        arguments.put("x-dead-letter-exchange", "order-event-exchange");
-        arguments.put("x-dead-letter-routing-key", "order.release");
-        arguments.put("x-message-ttl", 60000);
-        return new Queue("order.delay.queue", true, false, false, arguments);
-    }
-
-    @Bean
-    public Queue orderReleaseQueue() {
-        return new Queue("order.release.queue", true, false, false);
-    }
-
-    @Bean
-    public Queue orderSecKillQueue() {
-        return new Queue("order.seckill.queue", true, false, false);
-    }
-
-    @Bean
-    public Exchange orderEventExchange() {
-        return new TopicExchange("order-event-exchange", true, false);
-    }
-
-
-    @Bean
-    public Binding orderCreateBinding() {
-        return new Binding("order.delay.queue",
-                Binding.DestinationType.QUEUE,
-                "order-event-exchange",
-                "order.create", null);
-    }
-
-
-    @Bean
-    public Binding orderReleaseBinding() {
-        return new Binding("order.release.queue",
-                Binding.DestinationType.QUEUE,
-                "order-event-exchange",
-                "order.release", null);
-    }
-
-    @Bean
-    public Binding orderReleaseOtherBinding() {
-        return new Binding("stock.release.queue",
-                Binding.DestinationType.QUEUE,
-                "order-event-exchange",
-                "order.release.other.#", null);
-    }
-
-    @Bean
-    public Binding orderSecKillBinding() {
-        return new Binding("order.seckill.queue",
-                Binding.DestinationType.QUEUE,
-                "order-event-exchange",
-                "order.seckill.order", null);
-    }
 }

@@ -1,6 +1,7 @@
 package com.guo.gulimall.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.guo.common.to.SecKillOrderTO;
 import com.guo.common.utils.PageUtils;
 import com.guo.gulimall.order.entity.OrderEntity;
 import com.guo.gulimall.order.vo.*;
@@ -29,5 +30,7 @@ public interface OrderService extends IService<OrderEntity> {
     PageUtils queryPageWithItem(Map<String, Object> params);
 
     String handlePayResult(PayAsyncVo payAsyncVo);
+
+    void createSecKillOrder(SecKillOrderTO secKillOrderTO);
 }
 

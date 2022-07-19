@@ -2,9 +2,13 @@ package com.guo.gulimall.secskill.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.guo.common.to.SecKillOrderTO;
 import com.guo.common.utils.R;
+import com.guo.common.vo.MemberRespVO;
 import com.guo.gulimall.secskill.feign.CouponFeignService;
 import com.guo.gulimall.secskill.feign.ProductFeignService;
+import com.guo.gulimall.secskill.interceptor.LoginInterceptor;
 import com.guo.gulimall.secskill.service.SecKillService;
 import com.guo.gulimall.secskill.to.SecKillSkuRedisTO;
 import com.guo.gulimall.secskill.vo.SecKillSessionWithSkusVO;
@@ -14,16 +18,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -40,6 +47,8 @@ public class SecKillServiceImpl implements SecKillService {
     private final StringRedisTemplate redisTemplate;
 
     private final RedissonClient redissonClient;
+
+    private final RabbitTemplate rabbitTemplate;
 
     private final String SESSIONS_CACHE_PREFIX = "secKill:sessions:";
 
@@ -117,6 +126,60 @@ public class SecKillServiceImpl implements SecKillService {
         return null;
     }
 
+    @Override
+    public String kill(String killId, String key, Integer num) {
+
+        MemberRespVO user = LoginInterceptor.loginUser.get();
+        BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SKU_CACHE_PREFIX);
+        String val = hashOps.get(killId);
+        if (StringUtils.isEmpty(val)) {
+            return null;
+        }
+        SecKillSkuRedisTO skuRedisTO = JSON.parseObject(val, SecKillSkuRedisTO.class);
+        Long startTime = skuRedisTO.getStartTime();
+        Long endTime = skuRedisTO.getEndTime();
+        long now = System.currentTimeMillis();
+        if (now < startTime || now > endTime) {
+            return null;
+        }
+        Long skuId = skuRedisTO.getSkuId();
+        Long sessionId = skuRedisTO.getPromotionSessionId();
+        String randomCode = skuRedisTO.getRandomCode();
+        // 验证合法性
+        if (randomCode.equals(key) && killId.equals(sessionId + "-" + skuId)) {
+            // 验证购物数量是否合理
+            if (num <= skuRedisTO.getSecKillLimit()) {
+                // 验证当前用户是否已经买过
+                String isBuyKey = user.getId() + "_" + killId;
+                long ttl = endTime - now;
+                Boolean canBuy = redisTemplate.opsForValue().setIfAbsent(isBuyKey, num.toString(), ttl, TimeUnit.MILLISECONDS);
+                if (Boolean.TRUE.equals(canBuy)) {
+                    // 获取信号量
+                    RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
+                    try {
+                        semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+                        // 秒杀成功，快速下单，给 MQ 发消息
+                        String orderSn = IdWorker.getTimeId();
+                        SecKillOrderTO orderTO = new SecKillOrderTO();
+                        orderTO.setOrderSn(orderSn);
+                        orderTO.setNum(num);
+                        orderTO.setSecKillPrice(skuRedisTO.getSecKillPrice());
+                        orderTO.setPromotionSessionId(sessionId);
+                        orderTO.setSkuId(skuId);
+                        orderTO.setMemberId(user.getId());
+                        rabbitTemplate.convertAndSend("order-event-exchange", "order.seckill.order", orderTO);
+                        return orderSn;
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                        return null;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     private void saveSessionInfo(List<SecKillSessionWithSkusVO> sessions) {
         for (SecKillSessionWithSkusVO session : sessions) {
 //            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -134,7 +197,7 @@ public class SecKillServiceImpl implements SecKillService {
 
     private void saveSessionSkuInfo(List<SecKillSessionWithSkusVO> sessions) {
         for (SecKillSessionWithSkusVO session : sessions) {
-            BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKU_CACHE_PREFIX);
+            BoundHashOperations<String, String, String> ops = redisTemplate.boundHashOps(SKU_CACHE_PREFIX);
             for (SecKillSkuVO skuVO : session.getRelations()) {
                 String skuKey = skuVO.getPromotionSessionId().toString() + "-" + skuVO.getSkuId();
                 if (Boolean.FALSE.equals(ops.hasKey(skuKey))) {
@@ -148,22 +211,24 @@ public class SecKillServiceImpl implements SecKillService {
                     }
                     // sku 的秒杀信息
                     BeanUtils.copyProperties(skuVO, secKillSkuRedisTO);
+                    secKillSkuRedisTO.setSecKillLimit(skuVO.getSecKillLimit());
+                    secKillSkuRedisTO.setSecKillCount(skuVO.getSecKillCount());
                     // sku 的秒杀时间信息
                     secKillSkuRedisTO.setStartTime(session.getStartTime().getTime());
                     secKillSkuRedisTO.setEndTime(session.getEndTime().getTime());
                     // 秒杀随机码，保证公平性
                     String code = UUID.randomUUID().toString().replace("-", "");
                     secKillSkuRedisTO.setRandomCode(code);
+                    String json = JSON.toJSONString(secKillSkuRedisTO);
+                    log.info(json);
                     // 缓存
-                    ops.put(skuKey, JSON.toJSONString(secKillSkuRedisTO));
+                    ops.put(skuKey, json);
                     // 使用商品的库存作为分布式信号量，限流
                     String semaphoreKey = SKU_STOCK_SEMAPHORE + code;
                     RSemaphore semaphore = redissonClient.getSemaphore(semaphoreKey);
                     semaphore.trySetPermits(skuVO.getSecKillCount());
                     log.info("秒杀商品上传");
                 }
-
-
 
             }
         }

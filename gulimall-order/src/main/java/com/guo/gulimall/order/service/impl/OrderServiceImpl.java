@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guo.common.constant.OrderConstant;
 import com.guo.common.excepiton.NoStockException;
+import com.guo.common.to.SecKillOrderTO;
 import com.guo.common.to.mq.OrderTO;
 import com.guo.common.utils.PageUtils;
 import com.guo.common.utils.Query;
@@ -285,6 +286,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             this.baseMapper.updateOrderStatus(outTradeNo, OrderStatusEnum.PAYED.getCode());
         }
         return "success";
+    }
+
+    @Override
+    public void createSecKillOrder(SecKillOrderTO secKillOrderTO) {
+        MemberRespVO member = LoginUserInterceptor.loginUser.get();
+        //1. 创建订单
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(secKillOrderTO.getOrderSn());
+        orderEntity.setMemberId(secKillOrderTO.getMemberId());
+        if (member != null) {
+            orderEntity.setMemberUsername(member.getUsername());
+        }
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        orderEntity.setCreateTime(new Date());
+        orderEntity.setPayAmount(secKillOrderTO.getSecKillPrice().multiply(new BigDecimal(secKillOrderTO.getNum())));
+        this.save(orderEntity);
+        //2. 创建订单项
+        R r = productFeignService.getSkuInfo(secKillOrderTO.getSkuId());
+        if (r.getCode() == 0) {
+            SecKillSkuInfoVO skuInfo = r.getData("skuInfo", new TypeReference<SecKillSkuInfoVO>() {
+            });
+            OrderItemEntity orderItemEntity = new OrderItemEntity();
+            orderItemEntity.setOrderSn(secKillOrderTO.getOrderSn());
+            orderItemEntity.setSpuId(skuInfo.getSpuId());
+            orderItemEntity.setCategoryId(skuInfo.getCatalogId());
+            orderItemEntity.setSkuId(skuInfo.getSkuId());
+            orderItemEntity.setSkuName(skuInfo.getSkuName());
+            orderItemEntity.setSkuPic(skuInfo.getSkuDefaultImg());
+            orderItemEntity.setSkuPrice(skuInfo.getPrice());
+            orderItemEntity.setSkuQuantity(secKillOrderTO.getNum());
+            orderItemService.save(orderItemEntity);
+        }
     }
 
     private void saveOrder(OrderCreateTO order) {
