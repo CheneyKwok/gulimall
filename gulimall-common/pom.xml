@@ -85,6 +85,11 @@
 <!--                </exclusion>-->
 <!--            </exclusions>-->
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
 
         <!-- spring-cloud-loadbalancer -->
         <!-- Spring Cloud 在 Hoxton.M2 RELEASED版本之后 Netflix Ribbon处于维护模式，
