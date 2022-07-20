@@ -8,6 +8,9 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.56.10:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
   application:
     name: gulimall-coupon
 mybatis-plus:
@@ -17,4 +20,9 @@ mybatis-plus:
       id-type: auto
 server:
   port: 7000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 

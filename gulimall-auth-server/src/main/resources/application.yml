@@ -5,6 +5,9 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.56.10:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
   redis:
     host: 192.168.56.10
     port: 6379
@@ -13,3 +16,8 @@ feign:
     connection-timeout: 5000
 server:
   port: 99
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

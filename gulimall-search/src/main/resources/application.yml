@@ -3,6 +3,9 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.56.10:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
   application:
     name: gulimall-search
   thymeleaf:
@@ -12,3 +15,8 @@ spring:
     port: 6379
 server:
   port: 12000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

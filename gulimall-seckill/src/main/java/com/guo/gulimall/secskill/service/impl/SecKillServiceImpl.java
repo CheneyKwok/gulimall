@@ -1,5 +1,6 @@
 package com.guo.gulimall.secskill.service.impl;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -71,6 +72,13 @@ public class SecKillServiceImpl implements SecKillService {
         }
     }
 
+    public List<SecKillSkuRedisTO> getCurrentSecKillBlockHandler() {
+        log.error("getCurrentSecKill 被限流");
+        return null;
+    }
+
+    // blockHandler 函数会在原方法被限流/降级/系统保护的时候调用，而 fallback 函数会针对所有类型的异常
+    @SentinelResource(value = "getCurrentSecKill", blockHandler = "getCurrentSecKillBlockHandler")
     @Override
     public List<SecKillSkuRedisTO> getCurrentSecKill() {
 

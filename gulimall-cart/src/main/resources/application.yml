@@ -7,6 +7,9 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.56.10:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
   redis:
     host: 192.168.56.10
     port: 6379
@@ -15,3 +18,8 @@ gulimall:
     core-pool-size: 20
     maximum-pool-size: 200
     keep-alive-time: 10
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
