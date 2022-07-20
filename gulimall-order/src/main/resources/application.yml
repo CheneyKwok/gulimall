@@ -4,6 +4,16 @@ spring:
     password: root
     url: jdbc:mysql://192.168.56.10:3306/gulimall_oms
     driver-class-name: com.mysql.cj.jdbc.Driver
+  zipkin:
+    base-url: http://192.168.56.10:9411 # Zipkin 服务器地址
+    discovery-client-enabled: false # 关闭服务发现
+    sender:
+      type: web # 设置用 http 方式进行传输
+  sleuth:
+    redis:
+      enabled: false
+    sampler:
+      probability: 1 # 设置抽样采集率为 100%，默认0.1，即 10%
   cloud:
     nacos:
       discovery:
