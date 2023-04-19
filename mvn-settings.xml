@@ -6,17 +6,11 @@
 
     <mirrors>
         <mirror>
-            <id>google-maven-central</id>
-            <name>Google Maven Central</name>
-            <url>https://maven-central.storage.googleapis.com/repos/central/data/</url>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
             <mirrorOf>central</mirrorOf>
         </mirror>
-<!--        <mirror>-->
-<!--            <id>alimaven</id>-->
-<!--            <name>aliyun maven</name>-->
-<!--            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
-<!--            <mirrorOf>central</mirrorOf>-->
-<!--        </mirror>-->
 <!--        <mirror>-->
 <!--            <id>repo.jenkins-ci.org</id>-->
 <!--            <url>https://repo.jenkins-ci.org/public/</url>-->
