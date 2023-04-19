@@ -1,0 +1,47 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gulimall-seckill
+  zipkin:
+    base-url: zipkin-service.gulimall:9411 # Zipkin 服务器地址
+    discovery-client-enabled: false # 关闭服务发现
+    sender:
+      type: web # 设置用 http 方式进行传输
+  sleuth:
+    redis:
+      enabled: false
+    sampler:
+      probability: 1 # 设置抽样采集率为 100%，默认0.1，即 10%
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos-service.gulimall:8848
+    sentinel:
+      transport:
+        dashboard: sentinel-service.gulimall:8858
+        port: 8719
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  redis:
+    host: redis-service.gulimall
+  rabbitmq:
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    virtual-host: /
+    host: rabbitmq-service.gulimall
+    port: 5672
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+feign:
+  sentinel:
+    enabled: true
+logging:
+  level:
+    com.guo.gulimall: debug
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug

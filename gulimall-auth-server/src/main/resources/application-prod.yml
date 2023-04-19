@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: gulimall-auth-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos-service.gulimall:8848
+    sentinel:
+      transport:
+        dashboard: sentinel-service.gulimall:8858
+  redis:
+    host: redis-service.gulimall
+    port: 6379
+  zipkin:
+    base-url: zipkin-service.gulimall:9411 # Zipkin 服务器地址
+    discovery-client-enabled: false # 关闭服务发现
+    sender:
+      type: web # 设置用 http 方式进行传输
+  sleuth:
+    redis:
+      enabled: false
+    sampler:
+      probability: 1 # 设置抽样采集率为 100%，默认0.1，即 10%
+feign:
+  httpclient:
+    connection-timeout: 5000
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

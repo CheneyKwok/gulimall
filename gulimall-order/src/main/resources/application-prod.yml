@@ -1,0 +1,75 @@
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://mysql-master-service/gulimall_oms
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  zipkin:
+    base-url: zipkin-service.gulimall:9411 # Zipkin 服务器地址
+    discovery-client-enabled: false # 关闭服务发现
+    sender:
+      type: web # 设置用 http 方式进行传输
+  sleuth:
+    redis:
+      enabled: false
+    sampler:
+      probability: 1 # 设置抽样采集率为 100%，默认0.1，即 10%
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos-service.gulimall:8848
+    sentinel:
+      transport:
+        dashboard: sentinel-service.gulimall:8858
+  application:
+      name: gulimall-order
+  redis:
+    host: redis-service.gulimall
+    port: 6379
+  rabbitmq:
+    host: rabbitmq-service.gulimall
+    port: 5672
+    virtual-host: /
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+  thymeleaf:
+    cache: false
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+seata:
+  tx-service-group: order_tx_group
+  registry:
+    nacos:
+      server-addr: nacos-service.gulimall:8848
+      username: nacos
+      password: nacos
+  config:
+    type: nacos
+    nacos:
+      server-addr: nacos-service.gulimall:8848
+      username: nacos
+      password: nacos
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+gulimall:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 200
+    keep-alive-time: 10

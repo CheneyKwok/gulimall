@@ -1,0 +1,64 @@
+server:
+  port: 8080
+spring:
+  devtools:
+    add-properties: off
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://mysql-master-service:3306/gulimall_pms
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos-service.gulimall:8848
+    sentinel:
+      transport:
+        dashboard: sentinel-service.gulimall:8858
+  application:
+      name: gulimall-product
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: false
+  redis:
+    host: redis-service.gulimall
+  zipkin:
+    base-url: zipkin-service.gulimall:9411 # Zipkin 服务器地址
+    discovery-client-enabled: true # 关闭服务发现
+    sender:
+      type: web # 设置用 http 方式进行传输
+  sleuth:
+    redis:
+      enabled: false
+    sampler:
+      probability: 1 # 设置抽样采集率为 100%，默认0.1，即 10%
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+logging:
+  level:
+    com.guo.gulimall: debug
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug
+#alibaba:
+#  cloud:
+#    access-key: 
+#    secret-key: 
+#    oss:
+#      endpoint: oss-cn-hangzhou.aliyuncs.com
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+gulimall:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 200
+    keep-alive-time: 10
