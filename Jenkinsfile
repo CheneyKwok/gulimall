@@ -6,8 +6,8 @@ pipeline {
   }
 
   parameters {
-      string(name: 'PROJECT_VERSION', defaultValue: 'v1.0', description: '')
-      string(name: 'PROJECT_NAME', defaultValue: 'gulimall-cart', description: '')
+      string(name: 'PROJECT_VERSION', defaultValue: 'v1.0', description: '项目版本')
+      string(name: 'PROJECT_NAME', defaultValue: 'gulimall-cart', description: '构建模块')
   }
 
   environment {
@@ -75,8 +75,8 @@ pipeline {
     stage('部署到集群') {
 
       steps {
-        input(id: 'deploy-to-dev', message: '是否将 $PROJECT_NAME 部署到集群中?')
-        kubernetesDeploy(configs: '$PROJECT_NAME/deploy/**', enableConfigSubstitution: true, kubeconfigId: "$KUBECONFIG_CREDENTIAL_ID")
+        input(id: 'deploy-to-dev', message: "是否将 $PROJECT_NAME 部署到集群中?")
+        kubernetesDeploy(configs: "$PROJECT_NAME/deploy/**", enableConfigSubstitution: true, kubeconfigId: "$KUBECONFIG_CREDENTIAL_ID")
       }
     }
 

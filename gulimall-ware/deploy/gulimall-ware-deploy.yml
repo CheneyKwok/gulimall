@@ -60,7 +60,7 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: 8080
-      nodePort: 20011
+      nodePort: 30011
   selector:
     app: gulimall-ware
     version: v1

@@ -60,7 +60,7 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: 8080
-      nodePort: 20008
+      nodePort: 30008
   selector:
     app: gulimall-search
     version: v1
