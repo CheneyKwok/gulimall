@@ -1,11 +1,8 @@
 <settings>
-    <!--    <mirrors>-->
-    <!--        <mirror>-->
-    <!--            <id>repo.jenkins-ci.org</id>-->
-    <!--            <url>https://repo.jenkins-ci.org/public/</url>-->
-    <!--            <mirrorOf>m.g.o-public</mirrorOf>-->
-    <!--        </mirror>-->
-    <!--    </mirrors>-->
+    <pluginGroups>
+        <pluginGroup>org.jenkins-ci.tools</pluginGroup>
+        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+    </pluginGroups>
 
     <mirrors>
         <mirror>
@@ -15,4 +12,18 @@
             <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
         </mirror>
     </mirrors>
+    <profiles>
+        <profile>
+            <id>jdk-1.8</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <jdk>1.8</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.source>1.8</maven.compiler.source>
+                <maven.compiler.target>1.8</maven.compiler.target>
+                <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+            </properties>
+        </profile>
+    </profiles>
 </settings>
