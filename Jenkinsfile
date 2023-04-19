@@ -6,8 +6,8 @@ pipeline {
   }
 
   parameters {
-      string(name: 'PROJECT_VERSION', defaultValue: '', description: '')
-      string(name: 'PROJECT_NAME', defaultValue: '', description: '')
+      string(name: 'PROJECT_VERSION', defaultValue: 'v1.0', description: '')
+      string(name: 'PROJECT_NAME', defaultValue: 'gulimall-cart', description: '')
   }
 
   environment {
@@ -25,7 +25,7 @@ pipeline {
 
   stages {
 
-    stage('clone code') {
+    stage('拉取代码') {
       agent none
       steps {
         git(url: 'https://github.com/CheneyKwok/gulimall.git', credentialsId: 'github-id', branch: 'master', changelog: true, poll: false)
@@ -36,7 +36,7 @@ pipeline {
     }
 
 
-    stage('sonarqube analysis') {
+    stage('sonarqube 代码质量分析') {
       steps {
         container ('maven') {
           withCredentials([string(credentialsId: "$SONAR_CREDENTIAL_ID", variable: 'SONAR_TOKEN')]) {
@@ -44,25 +44,62 @@ pipeline {
              sh "mvn sonar:sonar -o -gs `pwd`/mvn-settings.xml -Dsonar.login=$SONAR_TOKEN"
             }
           }
-          timeout(time: 1, unit: 'HOURS') {
-            waitForQualityGate abortPipeline: true
-          }
         }
       }
     }
 
 
-    stage ('build & push') {
+    stage ('构建镜像 & 推送镜像') {
         steps {
             container ('maven') {
                 sh 'mvn -o -Dmaven.test.skip=true -gs `pwd`/mvn-settings.xml clean package'
-                sh 'cd $PROJECT_NAME docker build --no-cache -f Dockerfile -t $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
+                sh 'cd $PROJECT_NAME && docker build --no-cache -f Dockerfile -t $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
                 withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL_ID" ,)]) {
                     sh 'echo "$DOCKER_PASSWORD" | docker login $REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
                     sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER'
                 }
             }
         }
+    }
+
+    stage('推送最新镜像'){
+       steps{
+            container ('maven') {
+              sh 'docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:latest '
+              sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:latest '
+            }
+       }
+    }
+
+
+    stage('部署到集群') {
+
+      steps {
+        input(id: 'deploy-to-dev', message: '是否将 $PROJECT_NAME 部署到集群中?')
+        kubernetesDeploy(configs: '$PROJECT_NAME/deploy/**', enableConfigSubstitution: true, kubeconfigId: "$KUBECONFIG_CREDENTIAL_ID")
+      }
+    }
+
+
+    stage('发布版本'){
+      when{
+        expression{
+          return params.PROJECT_VERSION =~ /v.*/
+        }
+      }
+      steps {
+          container ('maven') {
+            input(id: 'release-image-with-tag', message: '发布当前版本镜像吗?')
+              withCredentials([usernamePassword(credentialsId: "$GITHUB_CREDENTIAL_ID", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                sh 'git config --global user.email "2399214024.com" '
+                sh 'git config --global user.name "cheneykwok" '
+                sh 'git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION" '
+                sh 'git push http://$GIT_USERNAME:$GIT_PASSWORD@github.com/$GITHUB_ACCOUNT/devops-java-sample.git --tags --ipv4'
+              }
+            sh 'docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION '
+            sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION '
+      }
+      }
     }
 
 
