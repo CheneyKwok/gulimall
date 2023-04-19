@@ -12,7 +12,7 @@ pipeline {
 
   environment {
       DOCKER_CREDENTIAL_ID = 'aliyun-dockerhub-id'
-      GITHUB_CREDENTIAL_ID = 'github-id'
+      GITHUB_CREDENTIAL_ID = 'github-token'
       KUBECONFIG_CREDENTIAL_ID = 'kubeconfig'
       REGISTRY = 'registry.cn-hangzhou.aliyuncs.com'
       DOCKERHUB_NAMESPACE = '2399214024'
