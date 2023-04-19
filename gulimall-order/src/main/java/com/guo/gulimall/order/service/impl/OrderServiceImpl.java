@@ -29,6 +29,7 @@ import com.guo.gulimall.order.service.PaymentInfoService;
 import com.guo.gulimall.order.to.OrderCreateTO;
 import com.guo.gulimall.order.vo.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
 
 
 @Slf4j
@@ -205,11 +204,87 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return responseVO;
     }
 
+    public static void bubble(int[] a) {
+        int index = a.length - 1;
+        for (int i = 0; i < a.length - 1; i++) {
+            int last = 0;
+            for (int j = 0; j < index; j++) {
+                if (a[j] > a[j + 1]) {
+                    ArrayUtils.swap(a, j, j + 1);
+                    last = j;
+                }
+            }
+            index = last;
+            if (index == 0) {
+                break;
+            }
+        }
+    }
+
+    public static void selection(int[] a) {
+        for (int i = 0; i < a.length - 1; i++) {
+            int s = i;
+            for (int j = s + 1; j < a.length; j++) {
+                if (a[s] > a[j]) {
+                    s = j;
+                }
+            }
+            if(s != i)
+            ArrayUtils.swap(a, i, s);
+        }
+    }
+
+    public static void quickSort(int[] a, int lo, int hi) {
+        if (lo > hi) {
+            return;
+        }
+        int l = lo, r = hi;
+        int pv = a[l];
+        while (l != r) {
+            while (r > l && a[r] >= pv) {
+                r--;
+            }
+            a[l] = a[r];
+            while(r > l && a[l] <= pv) {
+                l ++;
+            }
+            a[r] = a[l];
+        }
+        a[l] = pv;
+        quickSort(a, lo, l - 1);
+        quickSort(a, l + 1, hi);
+    }
+
+    public static void insert(int[] a) {
+        for (int i = 1; i < a.length; i++) {
+            int insert = a[i];
+            int j = i - 1;
+            while (j >= 0) {
+                if (a[j] > insert) {
+                    a[j + 1] = a[j];
+                } else {
+                    break;
+                }
+                j--;
+            }
+            a[j + 1] = insert;
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] a = {2, 1, 7, 3, 5};
+//        int[] a = {2, 4, 52, 8, 3, 6, 7, 1};
+//        insert(a);
+//        quickSort(a, 0, a.length -1);
+        selection(a);
+        System.out.println(Arrays.toString(a));
+    }
+
     @Override
     public void closeOrder(OrderEntity entity) {
         OrderEntity orderEntity = getById(entity.getId());
         if (Objects.equals(orderEntity.getStatus(), OrderStatusEnum.CREATE_NEW.getCode())) {
-            // 未支付的超时自动关单
+             // 未支付的超时自动关单
             orderEntity.setStatus(OrderStatusEnum.CANCLED.getCode());
             lambdaUpdate()
                     .set(OrderEntity::getStatus, orderEntity.getStatus())

@@ -28,6 +28,6 @@ public class ElasticsearchConfig {
     public RestHighLevelClient esRestClient() {
         return new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("192.168.56.10", 9200, "http")));
+                        new HttpHost("elasticsearch-service.gulimall", 9200, "http")));
     }
 }

@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://mysql-master-service.gulimall:3306/gulimall_sms?serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos-service.gulimall:8848
+    sentinel:
+      transport:
+        dashboard: sentinel-service.gulimall:8858
+  application:
+    name: gulimall-coupon
+  zipkin:
+    base-url: zipkin-service.gulimall:9411 # Zipkin 服务器地址
+    discovery-client-enabled: false # 关闭服务发现
+    sender:
+      type: web # 设置用 http 方式进行传输
+  sleuth:
+    sampler:
+      probability: 1 # 设置抽样采集率为 100%，默认0.1，即 10%
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
