@@ -1,4 +1,4 @@
-FROM java:8
+FROM java:openjdk-8-jre-alpine
 EXPOSE 8080
 
 VOLUME /temp
