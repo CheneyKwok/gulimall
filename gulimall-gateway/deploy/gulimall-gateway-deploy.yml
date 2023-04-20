@@ -60,9 +60,9 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: 8080
-      nodePort: 30004
   selector:
     app: gulimall-gateway
     version: v1
-  type: NodePort
+  clusterIP: None
+  type: ClusterIP
   sessionAffinity: None
