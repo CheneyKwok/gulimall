@@ -1,8 +1,0 @@
-spring:
-  cloud:
-    nacos:
-      config:
-        server-addr: nacos-service.gulimall:8848
-  application:
-    name: gulimall-gatewaya
-
