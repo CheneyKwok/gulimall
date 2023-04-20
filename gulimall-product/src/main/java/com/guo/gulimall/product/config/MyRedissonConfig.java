@@ -13,7 +13,7 @@ public class MyRedissonConfig {
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient(@Value("${spring.redis.host}") String host) {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis:" + host + ":6379");
+        config.useSingleServer().setAddress("redis://" + host + ":6379");
         return Redisson.create(config);
 
     }
