@@ -91,10 +91,19 @@ pipeline {
           container ('maven') {
             input(id: 'release-image-with-tag', message: '发布当前版本镜像吗?')
               withCredentials([usernamePassword(credentialsId: "$GITHUB_CREDENTIAL_ID", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                sh 'git config --global user.email "2399214024.com" '
-                sh 'git config --global user.name "cheneykwok" '
-                sh 'git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION" '
-                sh 'git push http://$GIT_USERNAME:$GIT_PASSWORD@github.com/$GITHUB_ACCOUNT/gulimall.git --tags --ipv4'
+            sh '''
+            t=$(git tag)
+            v=$PROJECT_VERSION
+            if [[ $t == *$v* ]]
+            then
+                echo "$v 版本已存在"
+            else
+                git config --global user.email "2399214024.com"
+                git config --global user.name "cheneykwok"
+                git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION"
+                git push http://$GIT_USERNAME:$GIT_PASSWORD@github.co/$GITHUB_ACCOUNT/gulimall.git --tags --ipv4
+            fi
+            '''
               }
             sh 'docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION '
             sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION '
