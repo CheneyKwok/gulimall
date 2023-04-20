@@ -14,10 +14,10 @@
          in the parent pom and in each module pom. Then JaCoCo will add up information in
          the same report, so that, it will give the cross-module code coverage. -->
 
-	<properties>
-		<sonar.jacoco.reportPaths>${PWD}/./target/jacoco.exec</sonar.jacoco.reportPaths>
-		<sonar.groovy.binaries>target/classes</sonar.groovy.binaries>
-	</properties>
+<!--	<properties>-->
+<!--		<sonar.jacoco.reportPaths>${PWD}/./target/jacoco.exec</sonar.jacoco.reportPaths>-->
+<!--		<sonar.groovy.binaries>target/classes</sonar.groovy.binaries>-->
+<!--	</properties>-->
 
 	<modules>
 		<module>gulimall-common</module>
@@ -78,11 +78,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.9.1.2184</version>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.sonarsource.scanner.maven</groupId>-->
+<!--				<artifactId>sonar-maven-plugin</artifactId>-->
+<!--				<version>3.9.1.2184</version>-->
+<!--			</plugin>-->
 
 
 		</plugins>
