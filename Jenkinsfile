@@ -29,9 +29,6 @@ pipeline {
       agent none
       steps {
         git(url: 'https://github.com/CheneyKwok/gulimall.git', credentialsId: 'github-id', branch: 'master', changelog: true, poll: false)
-        container('maven') {
-        sh 'mvn clean install -Dmaven.test.skip=true -gs `pwd`/mvn-settings.xml'
-        }
       }
     }
 
@@ -41,6 +38,7 @@ pipeline {
         container ('maven') {
           withCredentials([string(credentialsId: "$SONAR_CREDENTIAL_ID", variable: 'SONAR_TOKEN')]) {
             withSonarQubeEnv('sonar') {
+             sh 'mvn clean install -Dmaven.test.skip=true -gs `pwd`/mvn-settings.xml'
              sh "mvn sonar:sonar -o -gs `pwd`/mvn-settings.xml -Dsonar.login=$SONAR_TOKEN"
             }
           }
@@ -52,8 +50,7 @@ pipeline {
     stage ('构建镜像 & 推送镜像') {
         steps {
             container ('maven') {
-                sh 'mvn -o -Dmaven.test.skip=true -gs `pwd`/mvn-settings.xml clean package'
-                sh 'cd $PROJECT_NAME && docker build --no-cache -f Dockerfile -t $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
+                sh 'cd "$PROJECT_NAME" && docker build --no-cache -f Dockerfile -t $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
                 withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL_ID" ,)]) {
                     sh 'echo "$DOCKER_PASSWORD" | docker login $REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
                     sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER'
