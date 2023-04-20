@@ -101,7 +101,7 @@ pipeline {
                 git config --global user.email "2399214024.com"
                 git config --global user.name "cheneykwok"
                 git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION"
-                git push http://$GIT_USERNAME:$GIT_PASSWORD@github.co/$GITHUB_ACCOUNT/gulimall.git --tags --ipv4
+                git push http://$GIT_USERNAME:$GIT_PASSWORD@github.com/$GITHUB_ACCOUNT/gulimall.git --tags --ipv4
             fi
             '''
               }
