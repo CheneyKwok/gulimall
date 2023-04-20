@@ -5,17 +5,17 @@
     </pluginGroups>
 
     <mirrors>
-        <mirror>
-            <id>alimaven</id>
-            <name>aliyun maven</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <mirrorOf>central</mirrorOf>
-        </mirror>
 <!--        <mirror>-->
-<!--            <id>repo.jenkins-ci.org</id>-->
-<!--            <url>https://repo.jenkins-ci.org/public/</url>-->
-<!--            <mirrorOf>m.g.o-public</mirrorOf>-->
+<!--            <id>alimaven</id>-->
+<!--            <name>aliyun maven</name>-->
+<!--            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
+<!--            <mirrorOf>central</mirrorOf>-->
 <!--        </mirror>-->
+        <mirror>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+            <mirrorOf>m.g.o-public</mirrorOf>
+        </mirror>
     </mirrors>
     <profiles>
         <profile>
